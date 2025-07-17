@@ -40,7 +40,7 @@ pastelito_andino.setOpaque(false);
 pastelito_andino.setForeground(Color.BLACK);
 
 
-        ImageIcon inicio_sesion=new ImageIcon("Imagenes\\cuadro_azul_ucv.png");
+        ImageIcon inicio_sesion=new ImageIcon("src\\main\\Imagenes\\cuadro_azul_ucv.png");
     botones.add(empanada_de_carne_mechada);
     botones.add(arepa_con_queso);
     botones.add(pastelito_andino);
@@ -51,7 +51,7 @@ pastelito_andino.setBounds(100,450,180,30);
         
     Image cuadrar_imagen=inicio_sesion.getImage().getScaledInstance(700, 866,Image.SCALE_SMOOTH);
 JLabel cuadro_imagen=new JLabel(new ImageIcon(cuadrar_imagen));
-        ImageIcon desayuno_cena=new ImageIcon("Imagenes\\menu_desayuno.png");
+        ImageIcon desayuno_cena=new ImageIcon("src\\main\\Imagenes\\menu_desayuno.png");
         Image cuadrar_imagen_desayuno_cena= desayuno_cena.getImage().getScaledInstance(465, 517,Image.SCALE_SMOOTH);
 JLabel cuadro_desayuno_cena= new JLabel(new ImageIcon(cuadrar_imagen_desayuno_cena));
 cuadro_imagen.setBounds(0,0,700,866);
@@ -76,7 +76,7 @@ boton_cancelar.setFocusPainted(false);
 
 
 
-ImageIcon imagen_boton_cancelar=new ImageIcon("Imagenes\\\\cancelar.png");
+ImageIcon imagen_boton_cancelar=new ImageIcon("src\\main\\Imagenes\\\\cancelar.png");
 
 Image cuadrar_imagen_boton_cancelar=imagen_boton_cancelar.getImage().getScaledInstance(93, 34,Image.SCALE_SMOOTH);
 
@@ -94,7 +94,7 @@ confirmar.setOpaque(false);
 confirmar.setContentAreaFilled(false);
 confirmar.setFocusPainted(false);
 
-ImageIcon imagen_boton_confirmar=new ImageIcon("Imagenes\\Confirmar.png");
+ImageIcon imagen_boton_confirmar=new ImageIcon("src\\main\\Imagenes\\Confirmar.png");
 
 Image cuadrar_imagen_boton_confirmar=imagen_boton_confirmar.getImage().getScaledInstance(209, 72,Image.SCALE_SMOOTH);
 
