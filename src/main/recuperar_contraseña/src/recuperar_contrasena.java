@@ -4,6 +4,7 @@ import java.awt.event.*;
 public class recuperar_contrasena {
 
     private JFrame frame_recuperar_contrasena;
+    private JTextField campoCorreo;
 
     public recuperar_contrasena() {
         initialize();
@@ -42,79 +43,68 @@ public class recuperar_contrasena {
         labelRecuperacion.setForeground(Color.WHITE);
         cuadro_imagen.add(labelRecuperacion);
 
-        JTextField campoCorreo = new JTextField("INGRESE SU CORREO ELECTRÓNICO");
+        campoCorreo = new JTextField("INGRESE SU CORREO ELECTRÓNICO");
         campoCorreo.setBounds(100, 200, 500, 66);
         campoCorreo.setHorizontalAlignment(JTextField.CENTER);
         campoCorreo.setFont(new Font("Inter", Font.BOLD, 24));
+        campoCorreo.setForeground(Color.GRAY);
         cuadro_imagen.add(campoCorreo);
 
         JButton botonEnviar = new JButton();
         botonEnviar.setBounds(250, 300, 163, 76);
-       
-
-botonEnviar.setOpaque(false);
-botonEnviar.setContentAreaFilled(false);
-botonEnviar.setFocusPainted(false);
-
+        botonEnviar.setOpaque(false);
+        botonEnviar.setContentAreaFilled(false);
+        botonEnviar.setFocusPainted(false);
 
         cuadro_imagen.add(botonEnviar);
 
-ImageIcon imagen_boton_enviar=new ImageIcon("../../Imagenes/enviar.png");
-Image cuadrar_imagen_enviar=imagen_boton_enviar.getImage().getScaledInstance(163, 76,Image.SCALE_SMOOTH);
-JLabel label_boton_enviar=new JLabel(new ImageIcon(cuadrar_imagen_enviar));
+        ImageIcon imagen_boton_enviar=new ImageIcon("../../Imagenes/enviar.png");
+        Image cuadrar_imagen_enviar=imagen_boton_enviar.getImage().getScaledInstance(163, 76,Image.SCALE_SMOOTH);
+        JLabel label_boton_enviar=new JLabel(new ImageIcon(cuadrar_imagen_enviar));
 
-
-label_boton_enviar.setBounds(250,300,163,76);
-cuadro_imagen.add(label_boton_enviar);
+        label_boton_enviar.setBounds(250,300,163,76);
+        cuadro_imagen.add(label_boton_enviar);
 
         campoCorreo.addFocusListener(new FocusAdapter() {
-     private boolean isPlaceholderActive = true;
-    @Override
-    public void focusGained(FocusEvent e) {
-        if (isPlaceholderActive||campoCorreo.getText().equals("INGRESE SU CORREO ELECTRONICO")) {
-            campoCorreo.setText("");
-            campoCorreo.setForeground(Color.BLACK);
-           
-        }
-    }
-    
-    @Override
-    public void focusLost(FocusEvent e) {
-        if (isPlaceholderActive||campoCorreo.getText().isEmpty()) {
-            campoCorreo.setText("INGRESE SU CORREO ELECTRONICO");
-            campoCorreo.setFont(new Font("Inter",Font.BOLD,24));
-             isPlaceholderActive = true;
-        }else{
-      campoCorreo.setFont(new Font("Inter",Font.BOLD,24));
-      isPlaceholderActive=false;
-        }
-    }
-});
-
-   pantalla.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void focusGained(FocusEvent e) {
+                if (campoCorreo.getText().equals("INGRESE SU CORREO ELECTRÓNICO")) {
+                    campoCorreo.setText("");
+                    campoCorreo.setForeground(Color.BLACK);
+                }
+            }
 
-                if (e.getSource() == pantalla && campoCorreo.isFocusOwner()) {
-                    campoCorreo.transferFocusBackward(); 
-                            campoCorreo.transferFocusBackward();                           
-        
-                    pantalla.requestFocusInWindow(); 
-                                    
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (campoCorreo.getText().isEmpty()) {
+                    campoCorreo.setText("INGRESE SU CORREO ELECTRÓNICO");
+                    campoCorreo.setForeground(Color.GRAY);
                 }
             }
         });
 
+        pantalla.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getSource() == pantalla && campoCorreo.isFocusOwner()) {
+                    campoCorreo.transferFocusBackward();
+                    pantalla.requestFocusInWindow();
+                }
+            }
+        });
 
-        
         label_boton_cancelar.setBounds(580, 5, 93, 34);
         cuadro_imagen.add(boton_cancelar);
         cuadro_imagen.add(label_boton_cancelar);
 
         botonEnviar.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Se ha enviado un codigo de recuperación a su correo electrónico ");
+            String email = campoCorreo.getText();
+            if (email.contains("@") && !email.equals("INGRESE SU CORREO ELECTRÓNICO")) {
+                JOptionPane.showMessageDialog(null, "Se ha enviado un código de recuperación a su correo electrónico ");
+            } else {
+                JOptionPane.showMessageDialog(null, "Por favor, ingrese un correo electrónico válido (debe contener '@').", "Error de Correo", JOptionPane.ERROR_MESSAGE);
+            }
         });
-   
 
         boton_cancelar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {

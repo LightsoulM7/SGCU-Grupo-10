@@ -39,7 +39,6 @@ pantalla.add(cuadro_imagen);
 
 JButton boton_inicio_sesion=new JButton();
 JButton boton_olvido_clave=new JButton();
-JButton boton_cancelar=new JButton();
 
 boton_inicio_sesion.setBounds(100,500,163,76);
 boton_inicio_sesion.setOpaque(false);
@@ -51,20 +50,12 @@ boton_olvido_clave.setOpaque(false);
 boton_olvido_clave.setContentAreaFilled(false);
 boton_olvido_clave.setFocusPainted(false);
 
-boton_cancelar.setBounds(580,5,93,34);
-boton_cancelar.setOpaque(false);
-boton_cancelar.setContentAreaFilled(false);
-boton_cancelar.setFocusPainted(false);
-
 ImageIcon imagen_boton_inicio_sesion=new ImageIcon("../../Imagenes/iniciar_sesion.png");
 ImageIcon imagen_boton_olvido_clave=new ImageIcon("../../Imagenes/olvido_clave.png");
-ImageIcon imagen_boton_cancelar=new ImageIcon("../../Imagenes/cancelar.png");
 Image cuadrar_imagen_boton_inicio_sesion=imagen_boton_inicio_sesion.getImage().getScaledInstance(163, 76,Image.SCALE_SMOOTH);
 Image cuadrar_imagen_boton_olvido_clave=imagen_boton_olvido_clave.getImage().getScaledInstance(163, 76,Image.SCALE_SMOOTH);
-Image cuadrar_imagen_boton_cancelar=imagen_boton_cancelar.getImage().getScaledInstance(93, 34,Image.SCALE_SMOOTH);
 JLabel label_boton=new JLabel(new ImageIcon(cuadrar_imagen_boton_inicio_sesion));
 JLabel label_boton_olvido_clave=new JLabel(new ImageIcon(cuadrar_imagen_boton_olvido_clave));
-JLabel label_boton_cancelar=new JLabel(new ImageIcon(cuadrar_imagen_boton_cancelar));
 
 JTextField ingresar_cedula=new JTextField("INGRESE SU CEDULA");
 ingresar_cedula.setBounds(110,300,480,66);
@@ -175,19 +166,37 @@ ingresar_cedula.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 
 label_boton.setBounds(100,500,163,76);
 label_boton_olvido_clave.setBounds(430,500,163,76);
-label_boton_cancelar.setBounds(580,5,93,34);
 
 
 cuadro_imagen.add(boton_inicio_sesion);
       cuadro_imagen.add(label_boton);
       cuadro_imagen.add(boton_olvido_clave);
 cuadro_imagen.add(label_boton_olvido_clave);
-cuadro_imagen.add(boton_cancelar);
-cuadro_imagen.add(label_boton_cancelar);
 cuadro_imagen.add(ingresar_cedula);
 
+boton_inicio_sesion.addActionListener(e -> {
+    String cedula = ingresar_cedula.getText();
+    String contrasena = new String(ingresar_contrasena.getPassword());
 
-    
+    if (cedula.equals("Admin") || cedula.equals("0000")) {
+        frame_inicio_de_sesion.dispose();
+        AdminMenu adminMenu = new AdminMenu();
+        adminMenu.mostrar();
+    } else {
+        // Lógica de validación de credenciales para usuarios normales
+        // Por ahora, asumimos que el inicio de sesión es exitoso para cualquier otra cédula
+        frame_inicio_de_sesion.dispose();
+        MenuPrincipal menuPrincipal = new MenuPrincipal();
+        menuPrincipal.mostrar();
+    }
+});
+
+boton_olvido_clave.addActionListener(e -> {
+    frame_inicio_de_sesion.dispose(); // Cierra la ventana actual
+    recuperar_contrasena recuperarContrasena = new recuperar_contrasena();
+    recuperarContrasena.mostrar(); // Muestra la ventana de recuperación de contraseña
+});
+
 boton_inicio_sesion.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 label_boton.setIcon(new ImageIcon(imagen_boton_inicio_sesion.getImage().getScaledInstance(168, 81, Image.SCALE_SMOOTH)));

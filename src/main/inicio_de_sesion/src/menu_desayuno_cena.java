@@ -3,6 +3,7 @@ import javax.swing.*;
 
 
 import java.awt.*;
+import java.awt.event.*;
 public class menu_desayuno_cena {
     
     private JFrame menu;
@@ -63,28 +64,6 @@ cuadro_imagen.add(cuadro_desayuno_cena);
    cuadro_imagen.add(empanada_de_carne_mechada);
    cuadro_imagen.add(arepa_con_queso);
    cuadro_imagen.add(pastelito_andino);
-JButton boton_cancelar=new JButton();
-
-
-boton_cancelar.setBounds(580,5,93,34);
-boton_cancelar.setOpaque(false);
-boton_cancelar.setContentAreaFilled(false);
-boton_cancelar.setFocusPainted(false);
-
-
-
-
-
-
-ImageIcon imagen_boton_cancelar=new ImageIcon("../../Imagenes/cancelar.png");
-
-Image cuadrar_imagen_boton_cancelar=imagen_boton_cancelar.getImage().getScaledInstance(93, 34,Image.SCALE_SMOOTH);
-
-JLabel label_boton_cancelar=new JLabel(new ImageIcon(cuadrar_imagen_boton_cancelar));
-
-
-
-
 
 JButton confirmar=new JButton();
 
@@ -122,17 +101,20 @@ confirmar.addActionListener(e -> {
 
 
 
-label_boton_cancelar.setBounds(580,5,93,34);
-
-
 label_boton_confirmar.setBounds(260,600,209,72);
-cuadro_imagen.add(boton_cancelar);
-cuadro_imagen.add(label_boton_cancelar);
 
 cuadro_imagen.add(confirmar);
 cuadro_imagen.add(label_boton_confirmar);
 
-
+// Botón Atrás
+JButton btnBack = new JButton("Atrás");
+btnBack.setBounds(580, 5, 93, 34);
+btnBack.addActionListener(e -> {
+    menu.dispose();
+    MenuSelectionScreen menuSelectionScreen = new MenuSelectionScreen();
+    menuSelectionScreen.mostrar();
+});
+cuadro_imagen.add(btnBack);
 
 
 
