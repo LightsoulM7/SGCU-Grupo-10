@@ -26,7 +26,7 @@ JPanel pantalla = new JPanel(new BorderLayout());
 
         frame_inicio_de_sesion.add(pantalla);
         
-        ImageIcon inicio_sesion=new ImageIcon("src\\main\\Imagenes\\cuadro_ucv.png");
+        ImageIcon inicio_sesion=new ImageIcon("../../Imagenes/cuadro_ucv.png");
     
 
 
@@ -41,12 +41,12 @@ JButton boton_inicio_sesion=new JButton();
 JButton boton_olvido_clave=new JButton();
 JButton boton_cancelar=new JButton();
 
-boton_inicio_sesion.setBounds(100,450,163,76);
+boton_inicio_sesion.setBounds(100,500,163,76);
 boton_inicio_sesion.setOpaque(false);
 boton_inicio_sesion.setContentAreaFilled(false);
 boton_inicio_sesion.setFocusPainted(false);
 
-boton_olvido_clave.setBounds(430,450,163,76);
+boton_olvido_clave.setBounds(430,500,163,76);
 boton_olvido_clave.setOpaque(false);
 boton_olvido_clave.setContentAreaFilled(false);
 boton_olvido_clave.setFocusPainted(false);
@@ -56,9 +56,9 @@ boton_cancelar.setOpaque(false);
 boton_cancelar.setContentAreaFilled(false);
 boton_cancelar.setFocusPainted(false);
 
-ImageIcon imagen_boton_inicio_sesion=new ImageIcon("src\\main\\Imagenes\\iniciar_sesion.png");
-ImageIcon imagen_boton_olvido_clave=new ImageIcon("src\\main\\Imagenes\\\\olvido_clave.png");
-ImageIcon imagen_boton_cancelar=new ImageIcon("src\\main\\Imagenes\\\\cancelar.png");
+ImageIcon imagen_boton_inicio_sesion=new ImageIcon("../../Imagenes/iniciar_sesion.png");
+ImageIcon imagen_boton_olvido_clave=new ImageIcon("../../Imagenes/olvido_clave.png");
+ImageIcon imagen_boton_cancelar=new ImageIcon("../../Imagenes/cancelar.png");
 Image cuadrar_imagen_boton_inicio_sesion=imagen_boton_inicio_sesion.getImage().getScaledInstance(163, 76,Image.SCALE_SMOOTH);
 Image cuadrar_imagen_boton_olvido_clave=imagen_boton_olvido_clave.getImage().getScaledInstance(163, 76,Image.SCALE_SMOOTH);
 Image cuadrar_imagen_boton_cancelar=imagen_boton_cancelar.getImage().getScaledInstance(93, 34,Image.SCALE_SMOOTH);
@@ -70,67 +70,83 @@ JTextField ingresar_cedula=new JTextField("INGRESE SU CEDULA");
 ingresar_cedula.setBounds(110,300,480,66);
 ingresar_cedula.setHorizontalAlignment(JTextField.CENTER);
 ingresar_cedula.setFont(new Font("Inter",Font.BOLD,24));
-JTextField ingresar_contraseña=new JTextField("INGRESE SU CONTRASEÑA");
-ingresar_contraseña.setBounds(110,370,480,66);
-ingresar_contraseña.setHorizontalAlignment(JTextField.CENTER);
-ingresar_contraseña.setFont(new Font("Inter",Font.BOLD,24));
+ingresar_cedula.setForeground(Color.GRAY);
+
+JPasswordField ingresar_contrasena=new JPasswordField();
+final String placeholder_contrasena = "INGRESE SU CONTRASEÑA";
+ingresar_contrasena.setBounds(110,370,480,66);
+ingresar_contrasena.setHorizontalAlignment(JTextField.CENTER);
+ingresar_contrasena.setFont(new Font("Inter",Font.BOLD,24));
+ingresar_contrasena.setText(placeholder_contrasena);
+ingresar_contrasena.setEchoChar((char)0);
+ingresar_contrasena.setForeground(Color.GRAY);
+
+JCheckBox mostrar_contrasena = new JCheckBox("Mostrar Contraseña");
+mostrar_contrasena.setBounds(110, 440, 200, 30);
+mostrar_contrasena.setFont(new Font("Inter", Font.BOLD, 14));
+mostrar_contrasena.setForeground(Color.WHITE);
+mostrar_contrasena.setOpaque(false);
+cuadro_imagen.add(mostrar_contrasena);
+
 ingresar_cedula.addFocusListener(new FocusAdapter() {
-     private boolean isPlaceholderActive = true;
     @Override
     public void focusGained(FocusEvent e) {
-        if (isPlaceholderActive||ingresar_cedula.getText().equals("INGRESE SU CEDULA")) {
+        if (ingresar_cedula.getText().equals("INGRESE SU CEDULA")) {
             ingresar_cedula.setText("");
             ingresar_cedula.setForeground(Color.BLACK);
-           
         }
     }
     
     @Override
     public void focusLost(FocusEvent e) {
-        if (isPlaceholderActive||ingresar_cedula.getText().isEmpty()) {
+        if (ingresar_cedula.getText().isEmpty()) {
             ingresar_cedula.setText("INGRESE SU CEDULA");
-            ingresar_cedula.setFont(new Font("Inter",Font.BOLD,24));
-             isPlaceholderActive = true;
-        }else{
-      ingresar_cedula.setFont(new Font("Inter",Font.BOLD,24));
-      isPlaceholderActive=false;
+            ingresar_cedula.setForeground(Color.GRAY);
         }
     }
 });
 
-ingresar_contraseña.addFocusListener(new FocusAdapter() {
-     private boolean isPlaceholderActive = true;
+ingresar_contrasena.addFocusListener(new FocusAdapter() {
     @Override
     public void focusGained(FocusEvent e) {
-        if (isPlaceholderActive||ingresar_cedula.getText().equals("INGRESE SU CONTRASEÑA")) {
-            ingresar_contraseña.setText("");
-            ingresar_contraseña.setForeground(Color.BLACK);
-           
+        if (String.valueOf(ingresar_contrasena.getPassword()).equals(placeholder_contrasena)) {
+            ingresar_contrasena.setText("");
+            if (!mostrar_contrasena.isSelected()) {
+                ingresar_contrasena.setEchoChar('*');
+            }
+            ingresar_contrasena.setForeground(Color.BLACK);
         }
     }
     
     @Override
     public void focusLost(FocusEvent e) {
-        if (isPlaceholderActive||ingresar_cedula.getText().isEmpty()) {
-            ingresar_contraseña.setText("INGRESE SU CONTRASEÑA");
-            ingresar_contraseña.setFont(new Font("Inter",Font.BOLD,24));
-             isPlaceholderActive = true;
-        }else{
-      ingresar_cedula.setFont(new Font("Inter",Font.BOLD,24));
-      isPlaceholderActive=false;
+        if (String.valueOf(ingresar_contrasena.getPassword()).isEmpty()) {
+            ingresar_contrasena.setText(placeholder_contrasena);
+            ingresar_contrasena.setEchoChar((char)0);
+            ingresar_contrasena.setForeground(Color.GRAY);
         }
     }
 }); 
 
-
+mostrar_contrasena.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+        if (!String.valueOf(ingresar_contrasena.getPassword()).equals(placeholder_contrasena)) {
+            if (mostrar_contrasena.isSelected()) {
+                ingresar_contrasena.setEchoChar((char) 0);
+            } else {
+                ingresar_contrasena.setEchoChar('*');
+            }
+        }
+    }
+});
 
         pantalla.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
 
-                if (e.getSource() == pantalla && ingresar_cedula.isFocusOwner()||e.getSource()==pantalla&&ingresar_contraseña.isFocusOwner()) {
+                if (e.getSource() == pantalla && ingresar_cedula.isFocusOwner()||e.getSource()==pantalla&&ingresar_contrasena.isFocusOwner()) {
                     ingresar_cedula.transferFocusBackward(); 
-                            ingresar_contraseña.transferFocusBackward();                           
+                            ingresar_contrasena.transferFocusBackward();                           
         
                     pantalla.requestFocusInWindow(); 
                                     
@@ -144,7 +160,7 @@ ingresar_contraseña.addFocusListener(new FocusAdapter() {
 
         cuadro_imagen.add(ingresar_cedula);
        
-cuadro_imagen.add(ingresar_contraseña);
+cuadro_imagen.add(ingresar_contrasena);
       
     
 
@@ -157,8 +173,8 @@ cuadro_imagen.add(ingresar_contraseña);
 ingresar_cedula.setPreferredSize(new Dimension(480,66));
 ingresar_cedula.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 
-label_boton.setBounds(100,450,163,76);
-label_boton_olvido_clave.setBounds(430,450,163,76);
+label_boton.setBounds(100,500,163,76);
+label_boton_olvido_clave.setBounds(430,500,163,76);
 label_boton_cancelar.setBounds(580,5,93,34);
 
 
@@ -200,4 +216,3 @@ boton_inicio_sesion.addMouseListener(new java.awt.event.MouseAdapter() {
       SwingUtilities.invokeLater(() -> new inicio_de_sesion().mostrar());
             }
         }
-

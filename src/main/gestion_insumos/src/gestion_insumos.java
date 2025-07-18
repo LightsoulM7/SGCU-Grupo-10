@@ -1,231 +1,190 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+
 public class gestion_insumos {
-    
+
     private JFrame frame_gestion_insumos;
-    
+    private JComboBox<String> insumo_nutrientes;
+    private JTextField cantidad;
+    private JTextField nombre;
+    private JTextField precio;
+    private int lastInsumoIndex = 0; // Para evitar que se seleccione el placeholder
+
     public gestion_insumos() {
         initialize();
     }
-    
+
     private void initialize() {
         frame_gestion_insumos = new JFrame();
         frame_gestion_insumos.setTitle("Gestion de Insumos");
         frame_gestion_insumos.setSize(700, 866);
-    frame_gestion_insumos.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame_gestion_insumos.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame_gestion_insumos.setLocationRelativeTo(null);
         frame_gestion_insumos.setResizable(false);
-        
-       
-JPanel pantalla = new JPanel(new BorderLayout());
 
-
+        JPanel pantalla = new JPanel(null);
         frame_gestion_insumos.add(pantalla);
-        
-        ImageIcon gestion_insumos=new ImageIcon("src\\main\\Imagenes\\cuadro_azul_ucv.png");
-    
 
+        ImageIcon fondo_insumos = new ImageIcon("../../Imagenes/cuadro_azul_ucv.png");
+        JLabel cuadro_imagen = new JLabel(fondo_insumos);
+        cuadro_imagen.setBounds(0, 0, 700, 866);
 
-        
-    Image cuadrar_imagen=gestion_insumos.getImage().getScaledInstance(700, 866,Image.SCALE_SMOOTH);
-JLabel cuadro_imagen=new JLabel(new ImageIcon(cuadrar_imagen));
+        // --- COMBOBOX DE INSUMOS ---
+        String insumos[] = {"Seleccione un insumo", "Proteínas", "Lípidos", "Carbohidratos", "Productos de limpieza"};
+        insumo_nutrientes = new JComboBox<>(insumos);
+        insumo_nutrientes.setBounds(128, 220, 450, 70);
+        insumo_nutrientes.setFont(new Font("Arial", Font.BOLD, 22));
+        insumo_nutrientes.setForeground(Color.GRAY); // Color inicial para el placeholder
+        insumo_nutrientes.setBackground(Color.WHITE);
 
-cuadro_imagen.setBounds(0,0,700,866);
-pantalla.add(cuadro_imagen);
-
-JButton registrar_insumo=new JButton();
-
-
-registrar_insumo.setBounds(210,550,264,76);
-
-registrar_insumo.setOpaque(false);
-registrar_insumo.setContentAreaFilled(false);
-registrar_insumo.setFocusPainted(false);
-JButton seleccionar_insumo=new JButton();
-seleccionar_insumo.setBounds(200,220,311,76);
-seleccionar_insumo.setContentAreaFilled(false);
-seleccionar_insumo.setFocusPainted(false);
-
-ImageIcon imagen_boton_registrar_insumo=new ImageIcon("src\\main\\Imagenes\\\\Registrar_insumo.png");
-Image cuadrar_imagen_boton_registrar_insumo=imagen_boton_registrar_insumo.getImage().getScaledInstance(264, 76,Image.SCALE_SMOOTH);
-JLabel label_boton_registrar_insumo=new JLabel(new ImageIcon(cuadrar_imagen_boton_registrar_insumo));
-
-label_boton_registrar_insumo.setBounds(210,550,264,76);
-
-ImageIcon imagen_seleccionar_insumo=new ImageIcon("src\\main\\Imagenes\\barra_despegable_insumos.png");
-Image cuadrar_imagen_seleccionar_insumo=imagen_seleccionar_insumo.getImage().getScaledInstance(311, 76,Image.SCALE_SMOOTH);
-JLabel label_seleccionar_insumo=new JLabel(new ImageIcon(cuadrar_imagen_seleccionar_insumo));
-label_seleccionar_insumo.setBounds(200,220,311,76);
-
-cuadro_imagen.add(registrar_insumo);
-cuadro_imagen.add(label_boton_registrar_insumo);
-
-String insumos[]={"Seleccione un insumo","Proteínas","Lipidos","Carbohidratos","Productos de limpieza"};
-JComboBox<String>insumo_nutrientes=new JComboBox<>(insumos);
-insumo_nutrientes.setEditable(false);
-insumo_nutrientes.setBounds(128,220,450,70);
-
-Font letras_nutrientes=new Font("Arial",Font.BOLD,22);
-insumo_nutrientes.setForeground(Color.BLACK);
-insumo_nutrientes.setFont(letras_nutrientes);
-insumo_nutrientes.setBackground(Color.WHITE);
-
-JTextField cantidad=new JTextField("Cantidad");
-cantidad.setBounds(110,300,480,66);
-cantidad.setHorizontalAlignment(JTextField.CENTER);
-cantidad.setFont(new Font("Inter",Font.BOLD,24));
-JTextField nombre=new JTextField("Nombre");
-nombre.setBounds(110,370,480,66);
-nombre.setHorizontalAlignment(JTextField.CENTER);
-nombre.setFont(new Font("Inter",Font.BOLD,24));
-JTextField precio=new JTextField("Precio");
-precio.setBounds(110,440,480,66);
-precio.setHorizontalAlignment(JTextField.CENTER);
-precio.setFont(new Font("Inter",Font.BOLD,24));
-
-JButton boton_cancelar=new JButton();
-boton_cancelar.setBounds(580,5,93,34);
-boton_cancelar.setOpaque(false);
-boton_cancelar.setContentAreaFilled(false);
-boton_cancelar.setFocusPainted(false);
-ImageIcon imagen_boton_cancelar=new ImageIcon("src\\main\\Imagenes\\\\cancelar.png");
-Image cuadrar_imagen_boton_cancelar=imagen_boton_cancelar.getImage().getScaledInstance(93, 34,Image.SCALE_SMOOTH);
-JLabel label_boton_cancelar=new JLabel(new ImageIcon(cuadrar_imagen_boton_cancelar));
-label_boton_cancelar.setBounds(580,5,93,34);
-cuadro_imagen.add(boton_cancelar);
-cuadro_imagen.add(label_boton_cancelar);
-
-    
-cantidad.addFocusListener(new FocusAdapter() {
-     private boolean isPlaceholderActive = true;
-    @Override
-    public void focusGained(FocusEvent e) {
-        if (isPlaceholderActive||cantidad.getText().equals("Cantidad")) {
-            cantidad.setText("");
-            cantidad.setForeground(Color.BLACK);
-           
-        }
-    }
-    
-    @Override
-    public void focusLost(FocusEvent e) {
-        if (isPlaceholderActive||cantidad.getText().isEmpty()) {
-            cantidad.setText("Cantidad");
-            cantidad.setFont(new Font("Inter",Font.BOLD,24));
-             isPlaceholderActive = true;
-        }else{
-    cantidad.setFont(new Font("Inter",Font.BOLD,24));
-      isPlaceholderActive=false;
-        }
-    }
-});
-
-nombre.addFocusListener(new FocusAdapter() {
-     private boolean isPlaceholderActive = true;
-    @Override
-    public void focusGained(FocusEvent e) {
-        if (isPlaceholderActive||nombre.getText().equals("Nombre")) {
-            nombre.setText("");
-            nombre.setForeground(Color.BLACK);
-           
-        }
-    }
-    
-    @Override
-    public void focusLost(FocusEvent e) {
-        if (isPlaceholderActive||nombre.getText().isEmpty()) {
-            nombre.setText("Nombre");
-            nombre.setFont(new Font("Inter",Font.BOLD,24));
-             isPlaceholderActive = true;
-        }else{
-      nombre.setFont(new Font("Inter",Font.BOLD,24));
-      isPlaceholderActive=false;
-        }
-    }
-}); 
-
-precio.addFocusListener(new FocusAdapter() {
-     private boolean isPlaceholderActive = true;
-    @Override
-    public void focusGained(FocusEvent e) {
-        if (isPlaceholderActive||precio.getText().equals("Precio")) {
-            precio.setText("");
-            precio.setForeground(Color.BLACK);
-           
-        }
-    }
-    
-    @Override
-    public void focusLost(FocusEvent e) {
-        if (isPlaceholderActive||precio.getText().isEmpty()) {
-            precio.setText("Precio");
-    precio.setFont(new Font("Inter",Font.BOLD,24));
-             isPlaceholderActive = true;
-        }else{
-      precio.setFont(new Font("Inter",Font.BOLD,24));
-      isPlaceholderActive=false;
-        }
-    }
-}); 
- pantalla.addMouseListener(new MouseAdapter() {
+        // Renderer personalizado para mostrar el placeholder en gris
+        insumo_nutrientes.setRenderer(new DefaultListCellRenderer() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (index == -1) { // Cuando es el item seleccionado
+                    if (insumo_nutrientes.getSelectedIndex() == 0) {
+                        setForeground(Color.GRAY);
+                    } else {
+                        setForeground(Color.BLACK);
+                    }
+                } else { // Para la lista desplegable
+                    if (index == 0) {
+                        setForeground(Color.GRAY);
+                    } else {
+                        setForeground(Color.BLACK);
+                    }
+                }
+                return this;
+            }
+        });
 
-                if (e.getSource() == pantalla && cantidad.isFocusOwner()||e.getSource()==pantalla&&nombre.isFocusOwner()||e.getSource()==pantalla&&precio.isFocusOwner()) {
-                    cantidad.transferFocusBackward(); 
-                            nombre.transferFocusBackward();                           
-        precio.transferFocus();
-                    pantalla.requestFocusInWindow(); 
-                                    
+        insumo_nutrientes.addActionListener(e -> {
+            if (insumo_nutrientes.getSelectedIndex() == 0) {
+                insumo_nutrientes.setSelectedIndex(lastInsumoIndex);
+            } else {
+                lastInsumoIndex = insumo_nutrientes.getSelectedIndex();
+            }
+            // Forzar repintado para actualizar el color del item seleccionado
+            insumo_nutrientes.repaint();
+        });
+
+        // --- CAMPOS DE TEXTO ---
+        cantidad = createPlaceholderTextField("Cantidad");
+        cantidad.setBounds(110, 300, 480, 66);
+
+        nombre = createPlaceholderTextField("Nombre");
+        nombre.setBounds(110, 370, 480, 66);
+
+        precio = createPlaceholderTextField("Precio");
+        precio.setBounds(110, 440, 480, 66);
+
+        // --- BOTONES ---
+        JButton registrar_insumo_btn = new JButton();
+        registrar_insumo_btn.setBounds(210, 550, 264, 76);
+        registrar_insumo_btn.setOpaque(false);
+        registrar_insumo_btn.setContentAreaFilled(false);
+        registrar_insumo_btn.setFocusPainted(false);
+        registrar_insumo_btn.setBorderPainted(false);
+
+        ImageIcon imagen_boton_registrar = new ImageIcon("../../Imagenes/Registrar_insumo.png");
+        JLabel label_boton_registrar = new JLabel(imagen_boton_registrar);
+        label_boton_registrar.setBounds(210, 550, 264, 76);
+
+        JButton boton_cancelar = createCancelButton();
+
+        // --- ACCIÓN DE REGISTRAR ---
+        registrar_insumo_btn.addActionListener(e -> {
+            String selectedInsumo = (String) insumo_nutrientes.getSelectedItem();
+            String cantidadInsumo = cantidad.getText();
+            String nombreInsumo = nombre.getText();
+            String precioInsumo = precio.getText();
+
+            if (insumo_nutrientes.getSelectedIndex() == 0 || cantidadInsumo.equals("Cantidad") || nombreInsumo.equals("Nombre") || precioInsumo.equals("Precio")) {
+                JOptionPane.showMessageDialog(frame_gestion_insumos, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                String mensaje = String.format("Insumo Registrado:\nTipo: %s\nNombre: %s\nCantidad: %s\nPrecio: %s", selectedInsumo, nombreInsumo, cantidadInsumo, precioInsumo);
+                JOptionPane.showMessageDialog(frame_gestion_insumos, mensaje, "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
+                resetForm();
+            }
+        });
+
+        // --- AGREGAR COMPONENTES AL PANEL ---
+        pantalla.add(insumo_nutrientes);
+        pantalla.add(cantidad);
+        pantalla.add(nombre);
+        pantalla.add(precio);
+        pantalla.add(registrar_insumo_btn);
+        pantalla.add(label_boton_registrar);
+        pantalla.add(boton_cancelar);
+        pantalla.add(cuadro_imagen); // El fondo siempre al final
+
+        frame_gestion_insumos.setVisible(true);
+    }
+
+    private void resetForm() {
+        insumo_nutrientes.setSelectedIndex(0);
+        lastInsumoIndex = 0;
+        insumo_nutrientes.setForeground(Color.GRAY);
+        resetPlaceholderTextField(cantidad, "Cantidad");
+        resetPlaceholderTextField(nombre, "Nombre");
+        resetPlaceholderTextField(precio, "Precio");
+    }
+
+    private void resetPlaceholderTextField(JTextField textField, String placeholder) {
+        textField.setForeground(Color.GRAY);
+        textField.setText(placeholder);
+    }
+
+    private JTextField createPlaceholderTextField(String placeholder) {
+        JTextField textField = new JTextField(placeholder);
+        textField.setHorizontalAlignment(JTextField.CENTER);
+        textField.setFont(new Font("Inter", Font.BOLD, 24));
+        textField.setForeground(Color.GRAY);
+
+        textField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (textField.getText().equals(placeholder)) {
+                    textField.setText("");
+                    textField.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (textField.getText().isEmpty()) {
+                    textField.setForeground(Color.GRAY);
+                    textField.setText(placeholder);
                 }
             }
         });
-
-    
-    registrar_insumo.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Insumo Registrado");
-        });
-   
-        pantalla.setFocusable(true);
-
-
-  
-    
-    
-
-   pantalla.revalidate();
-        pantalla.repaint();
-
-    
-registrar_insumo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                label_boton_registrar_insumo.setIcon(new ImageIcon(imagen_boton_registrar_insumo.getImage().getScaledInstance(264, 76, Image.SCALE_SMOOTH)));
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-            label_boton_registrar_insumo.setIcon(new ImageIcon(imagen_boton_registrar_insumo.getImage().getScaledInstance(264, 76, Image.SCALE_SMOOTH)));
-            }
-        });
-      
-cuadro_imagen.add(insumo_nutrientes);
-cuadro_imagen.add(cantidad);
-cuadro_imagen.add(nombre);
-cuadro_imagen.add(precio);
-
-
+        return textField;
     }
 
+    private JButton createCancelButton() {
+        JButton boton_cancelar = new JButton();
+        boton_cancelar.setBounds(580, 5, 93, 34);
+        boton_cancelar.setOpaque(false);
+        boton_cancelar.setContentAreaFilled(false);
+        boton_cancelar.setFocusPainted(false);
+        boton_cancelar.setBorderPainted(false);
 
+        ImageIcon imagen_cancelar = new ImageIcon("../../Imagenes/cancelar.png");
+        JLabel label_cancelar = new JLabel(imagen_cancelar);
+        label_cancelar.setBounds(0, 0, 93, 34);
+        boton_cancelar.add(label_cancelar);
 
-
+        boton_cancelar.addActionListener(e -> frame_gestion_insumos.dispose());
+        return boton_cancelar;
+    }
 
     public void mostrar() {
-         
         frame_gestion_insumos.setVisible(true);
     }
-    
-    public static void main(String[] args) {
-      SwingUtilities.invokeLater(() -> new gestion_insumos().mostrar());
-            }
-        }
 
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new gestion_insumos().mostrar());
+    }
+}

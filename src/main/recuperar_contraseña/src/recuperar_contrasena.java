@@ -20,7 +20,7 @@ public class recuperar_contrasena {
         JPanel pantalla = new JPanel(new BorderLayout());
         frame_recuperar_contrasena.add(pantalla);
 
-        ImageIcon fondo = new ImageIcon("src\\main\\Imagenes\\cuadro_ucv.png");
+        ImageIcon fondo = new ImageIcon("../../Imagenes/cuadro_ucv.png");
         Image cuadrar_imagen = fondo.getImage().getScaledInstance(700, 866, Image.SCALE_SMOOTH);
         JLabel cuadro_imagen = new JLabel(new ImageIcon(cuadrar_imagen));
         cuadro_imagen.setBounds(0, 0, 700, 866);
@@ -32,7 +32,7 @@ public class recuperar_contrasena {
         boton_cancelar.setContentAreaFilled(false);
         boton_cancelar.setFocusPainted(false);
 
-        ImageIcon imagen_boton_cancelar = new ImageIcon("src\\main\\Imagenes\\cancelar.png");
+        ImageIcon imagen_boton_cancelar = new ImageIcon("../../Imagenes/cancelar.png");
         Image cuadrar_imagen_boton_cancelar = imagen_boton_cancelar.getImage().getScaledInstance(93, 34, Image.SCALE_SMOOTH);
         JLabel label_boton_cancelar = new JLabel(new ImageIcon(cuadrar_imagen_boton_cancelar));
 
@@ -59,7 +59,7 @@ botonEnviar.setFocusPainted(false);
 
         cuadro_imagen.add(botonEnviar);
 
-ImageIcon imagen_boton_enviar=new ImageIcon("src\\main\\Imagenes\\enviar.png");
+ImageIcon imagen_boton_enviar=new ImageIcon("../../Imagenes/enviar.png");
 Image cuadrar_imagen_enviar=imagen_boton_enviar.getImage().getScaledInstance(163, 76,Image.SCALE_SMOOTH);
 JLabel label_boton_enviar=new JLabel(new ImageIcon(cuadrar_imagen_enviar));
 
