@@ -49,7 +49,9 @@ public class MenuPrincipal {
         btnConsultarSaldo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(frame_menu_principal, "Funcionalidad de Consultar Saldo");
+                frame_menu_principal.dispose(); // Cierra la ventana actual
+                saldo saldoScreen = new saldo();
+                saldoScreen.mostrar(); // Muestra la pantalla de saldo
             }
         });
         fondo_label.add(btnConsultarSaldo);

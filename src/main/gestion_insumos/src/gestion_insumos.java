@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 
 public class gestion_insumos {
 
@@ -9,7 +10,8 @@ public class gestion_insumos {
     private JTextField cantidad;
     private JTextField nombre;
     private JTextField precio;
-    private int lastInsumoIndex = 0; // Para evitar que se seleccione el placeholder
+    private JTextField campo_busqueda;
+    private int lastInsumoIndex = 0;
 
     public gestion_insumos() {
         initialize();
@@ -30,26 +32,35 @@ public class gestion_insumos {
         JLabel cuadro_imagen = new JLabel(fondo_insumos);
         cuadro_imagen.setBounds(0, 0, 700, 866);
 
+        // --- BARRA DE BÚSQUEDA ---
+        campo_busqueda = createPlaceholderTextField("Buscar insumo por nombre");
+        campo_busqueda.setBounds(50, 150, 450, 50);
+        pantalla.add(campo_busqueda);
+
+        JButton boton_buscar = new JButton("Buscar");
+        boton_buscar.setBounds(510, 150, 120, 50);
+        boton_buscar.setFont(new Font("Arial", Font.BOLD, 18));
+        pantalla.add(boton_buscar);
+
         // --- COMBOBOX DE INSUMOS ---
         String insumos[] = {"Seleccione un insumo", "Proteínas", "Lípidos", "Carbohidratos", "Productos de limpieza"};
         insumo_nutrientes = new JComboBox<>(insumos);
         insumo_nutrientes.setBounds(128, 220, 450, 70);
         insumo_nutrientes.setFont(new Font("Arial", Font.BOLD, 22));
-        insumo_nutrientes.setForeground(Color.GRAY); // Color inicial para el placeholder
+        insumo_nutrientes.setForeground(Color.GRAY);
         insumo_nutrientes.setBackground(Color.WHITE);
 
-        // Renderer personalizado para mostrar el placeholder en gris
         insumo_nutrientes.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (index == -1) { // Cuando es el item seleccionado
+                if (index == -1) {
                     if (insumo_nutrientes.getSelectedIndex() == 0) {
                         setForeground(Color.GRAY);
                     } else {
                         setForeground(Color.BLACK);
                     }
-                } else { // Para la lista desplegable
+                } else {
                     if (index == 0) {
                         setForeground(Color.GRAY);
                     } else {
@@ -61,12 +72,9 @@ public class gestion_insumos {
         });
 
         insumo_nutrientes.addActionListener(e -> {
-            if (insumo_nutrientes.getSelectedIndex() == 0) {
-                insumo_nutrientes.setSelectedIndex(lastInsumoIndex);
-            } else {
+            if (insumo_nutrientes.getSelectedIndex() != 0) {
                 lastInsumoIndex = insumo_nutrientes.getSelectedIndex();
             }
-            // Forzar repintado para actualizar el color del item seleccionado
             insumo_nutrientes.repaint();
         });
 
@@ -90,7 +98,8 @@ public class gestion_insumos {
 
         ImageIcon imagen_boton_registrar = new ImageIcon("../../Imagenes/Registrar_insumo.png");
         JLabel label_boton_registrar = new JLabel(imagen_boton_registrar);
-        label_boton_registrar.setBounds(210, 550, 264, 76);
+        label_boton_registrar.setBounds(0, 0, 264, 76);
+        registrar_insumo_btn.add(label_boton_registrar);
 
         JButton boton_cancelar = createCancelButton();
 
@@ -104,10 +113,21 @@ public class gestion_insumos {
             if (insumo_nutrientes.getSelectedIndex() == 0 || cantidadInsumo.equals("Cantidad") || nombreInsumo.equals("Nombre") || precioInsumo.equals("Precio")) {
                 JOptionPane.showMessageDialog(frame_gestion_insumos, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                String mensaje = String.format("Insumo Registrado:\nTipo: %s\nNombre: %s\nCantidad: %s\nPrecio: %s", selectedInsumo, nombreInsumo, cantidadInsumo, precioInsumo);
-                JOptionPane.showMessageDialog(frame_gestion_insumos, mensaje, "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
+                String nuevoInsumo = String.format("%s,%s,%s,%s", selectedInsumo, nombreInsumo, cantidadInsumo, precioInsumo);
+                guardarInsumo(nuevoInsumo);
+                JOptionPane.showMessageDialog(frame_gestion_insumos, "Insumo Registrado Exitosamente", "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
                 resetForm();
             }
+        });
+
+        // --- ACCIÓN DE BÚSQUEDA ---
+        boton_buscar.addActionListener(e -> {
+            String nombreBusqueda = campo_busqueda.getText();
+            if (nombreBusqueda.isEmpty() || nombreBusqueda.equals("Buscar insumo por nombre")) {
+                JOptionPane.showMessageDialog(frame_gestion_insumos, "Por favor, ingrese un nombre para buscar.", "Error de Búsqueda", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            buscarInsumo(nombreBusqueda);
         });
 
         // --- AGREGAR COMPONENTES AL PANEL ---
@@ -116,11 +136,51 @@ public class gestion_insumos {
         pantalla.add(nombre);
         pantalla.add(precio);
         pantalla.add(registrar_insumo_btn);
-        pantalla.add(label_boton_registrar);
         pantalla.add(boton_cancelar);
-        pantalla.add(cuadro_imagen); // El fondo siempre al final
+        pantalla.add(cuadro_imagen);
 
         frame_gestion_insumos.setVisible(true);
+    }
+
+    private void guardarInsumo(String insumoData) {
+        String rutaArchivo = "../../../../src/main/db/insumos.txt";
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(rutaArchivo, true))) {
+            bw.write(insumoData);
+            bw.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(frame_gestion_insumos, "Error al guardar el insumo.", "Error de Archivo", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void buscarInsumo(String nombreInsumo) {
+        String rutaArchivo = "../../../../src/main/db/insumos.txt";
+        boolean encontrado = false;
+        try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",");
+                if (datos.length == 4 && datos[1].trim().equalsIgnoreCase(nombreInsumo.trim())) {
+                    insumo_nutrientes.setSelectedItem(datos[0].trim());
+                    nombre.setText(datos[1].trim());
+                    cantidad.setText(datos[2].trim());
+                    precio.setText(datos[3].trim());
+                    
+                    nombre.setForeground(Color.BLACK);
+                    cantidad.setForeground(Color.BLACK);
+                    precio.setForeground(Color.BLACK);
+
+                    encontrado = true;
+                    break;
+                }
+            }
+            if (!encontrado) {
+                JOptionPane.showMessageDialog(frame_gestion_insumos, "Insumo no encontrado.", "Búsqueda", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(frame_gestion_insumos, "Error al leer el archivo de insumos.", "Error de Archivo", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void resetForm() {
@@ -130,6 +190,7 @@ public class gestion_insumos {
         resetPlaceholderTextField(cantidad, "Cantidad");
         resetPlaceholderTextField(nombre, "Nombre");
         resetPlaceholderTextField(precio, "Precio");
+        resetPlaceholderTextField(campo_busqueda, "Buscar insumo por nombre");
     }
 
     private void resetPlaceholderTextField(JTextField textField, String placeholder) {

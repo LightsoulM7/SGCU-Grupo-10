@@ -4,6 +4,10 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.File;
 public class inicio_de_sesion {
     
     private JFrame frame_inicio_de_sesion;
@@ -175,21 +179,30 @@ cuadro_imagen.add(label_boton_olvido_clave);
 cuadro_imagen.add(ingresar_cedula);
 
 boton_inicio_sesion.addActionListener(e -> {
-    String cedula = ingresar_cedula.getText();
-    String contrasena = new String(ingresar_contrasena.getPassword());
+            String cedula = ingresar_cedula.getText();
+            String contrasena = new String(ingresar_contrasena.getPassword());
 
-    if (cedula.equals("Admin") || cedula.equals("0000")) {
-        frame_inicio_de_sesion.dispose();
-        AdminMenu adminMenu = new AdminMenu();
-        adminMenu.mostrar();
-    } else {
-        // Lógica de validación de credenciales para usuarios normales
-        // Por ahora, asumimos que el inicio de sesión es exitoso para cualquier otra cédula
-        frame_inicio_de_sesion.dispose();
-        MenuPrincipal menuPrincipal = new MenuPrincipal();
-        menuPrincipal.mostrar();
-    }
-});
+            try {
+                Integer.parseInt(cedula); // Confirma si la cédula es un número
+                String role = validarCredenciales(cedula, contrasena);
+
+                if (role != null) {
+                    if (role.equals("admin")) {
+                        frame_inicio_de_sesion.dispose();
+                        AdminMenu adminMenu = new AdminMenu();
+                        adminMenu.mostrar();
+                    } else {
+                        frame_inicio_de_sesion.dispose();
+                        MenuPrincipal menuPrincipal = new MenuPrincipal();
+                        menuPrincipal.mostrar();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(frame_inicio_de_sesion, "Cedula o contraseña incorrecta.", "Error de inicio de sesión", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame_inicio_de_sesion, "La cedula debe ser un número.", "Error de formato", JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
 boton_olvido_clave.addActionListener(e -> {
     frame_inicio_de_sesion.dispose(); // Cierra la ventana actual
@@ -209,6 +222,28 @@ boton_inicio_sesion.addMouseListener(new java.awt.event.MouseAdapter() {
 
 
 
+    }
+
+    private String validarCredenciales(String cedula, String contrasena) {
+        String rutaArchivo = "../../../../src/main/db/usuarios.txt";
+        try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",");
+                if (datos.length == 3) {
+                    String cedulaArchivo = datos[0].trim();
+                    String contrasenaArchivo = datos[1].trim();
+                    String rolArchivo = datos[2].trim();
+
+                    if (cedulaArchivo.equals(cedula) && contrasenaArchivo.equals(contrasena)) {
+                        return rolArchivo;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

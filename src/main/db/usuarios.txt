@@ -1,0 +1,2 @@
+0000,admin,admin
+1111,user,user
