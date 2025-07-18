@@ -63,8 +63,8 @@ public class MenuSelectionScreen {
         btnBack.setBounds(50, 50, 100, 40);
         btnBack.addActionListener(e -> {
             frame_menu_selection.dispose();
-            MenuPrincipal menuPrincipal = new MenuPrincipal();
-            menuPrincipal.mostrar();
+            AdminMenu adminMenu = new AdminMenu();
+            adminMenu.mostrar();
         });
         fondo_label.add(btnBack);
     }

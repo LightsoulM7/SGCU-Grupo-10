@@ -46,7 +46,7 @@ public class AdminMenu {
         btnConsultarSaldo.setBounds(150, startY + gap, buttonWidth, buttonHeight);
         btnConsultarSaldo.setFont(new Font("Arial", Font.BOLD, 24));
         btnConsultarSaldo.addActionListener(e -> {
-            saldo saldoView = new saldo();
+            saldo2 saldoView = new saldo2();
             saldoView.mostrar();
             frame_admin_menu.dispose();
         });
