@@ -3,16 +3,16 @@ import javax.swing.*;
 
 
 import java.awt.*;
-public class menu_almuerzo{
+public class menu_desayuno{
     
     private JFrame menu;
-    public menu_almuerzo() {
+    public menu_desayuno() {
         initialize();
     }
     
     private void initialize() {
         menu = new JFrame();
-        menu.setTitle(" Menu Almuerzo");
+        menu.setTitle(" Menu Desayuno");
         menu.setSize(700, 866);
     menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         menu.setLocationRelativeTo(null);
@@ -32,7 +32,7 @@ JPanel pantalla = new JPanel(new BorderLayout());
         
     Image cuadrar_imagen=fondo.getImage().getScaledInstance(700, 866,Image.SCALE_SMOOTH);
 JLabel cuadro_imagen=new JLabel(new ImageIcon(cuadrar_imagen));
-        ImageIcon desayuno_cena=new ImageIcon("Imagenes\\menu_almuerzo.png");
+        ImageIcon desayuno_cena=new ImageIcon("Imagenes\\menu_desayuno.png");
         Image cuadrar_imagen_desayuno= desayuno_cena.getImage().getScaledInstance(465, 517,Image.SCALE_SMOOTH);
 JLabel cuadro_desayuno= new JLabel(new ImageIcon(cuadrar_imagen_desayuno));
 cuadro_imagen.setBounds(0,0,700,866);
@@ -96,7 +96,7 @@ cuadro_imagen.add(label_boton_cancelar);
     }
     
     public static void main(String[] args) {
-      SwingUtilities.invokeLater(() -> new menu_almuerzo().mostrar());
+      SwingUtilities.invokeLater(() -> new menu_desayuno().mostrar());
             }
         }
 
