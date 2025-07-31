@@ -23,7 +23,7 @@ public class MenuPrincipal {
         frame_menu_principal.add(panel);
 
         // Fondo de la pantalla
-        ImageIcon fondo = new ImageIcon("../../Imagenes/cuadro_azul_ucv.png"); // Ruta relativa ajustada
+        ImageIcon fondo = new ImageIcon("../../Imagenes/cuadro_azul_ucv.png"); // Ajusta la ruta si es necesario
         JLabel fondo_label = new JLabel(fondo);
         fondo_label.setBounds(0, 0, 700, 866);
         panel.add(fondo_label);

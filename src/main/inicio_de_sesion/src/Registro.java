@@ -33,7 +33,10 @@ public class Registro {
         try (BufferedReader reader = new BufferedReader(new FileReader("../../db/cedulasComunidad.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                cedulasComunidad.add(line.trim());
+                String[] parts = line.split(",");
+                if (parts.length > 0) {
+                    cedulasComunidad.add(parts[0].trim());
+                }
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error al cargar las cédulas de la comunidad.", "Error", JOptionPane.ERROR_MESSAGE);
