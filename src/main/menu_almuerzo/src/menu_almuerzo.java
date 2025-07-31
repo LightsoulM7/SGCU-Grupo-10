@@ -26,13 +26,13 @@ JPanel pantalla = new JPanel(new BorderLayout());
         
 
 
-        ImageIcon fondo=new ImageIcon("Imagenes\\cuadro_azul_ucv.png");
+        ImageIcon fondo=new ImageIcon("src\\main\\Imagenes\\cuadro_azul_ucv.png");
 
 
         
     Image cuadrar_imagen=fondo.getImage().getScaledInstance(700, 866,Image.SCALE_SMOOTH);
 JLabel cuadro_imagen=new JLabel(new ImageIcon(cuadrar_imagen));
-        ImageIcon desayuno_cena=new ImageIcon("Imagenes\\menu_almuerzo.png");
+        ImageIcon desayuno_cena=new ImageIcon("src\\main\\Imagenes\\menu_almuerzo.png");
         Image cuadrar_imagen_desayuno= desayuno_cena.getImage().getScaledInstance(465, 517,Image.SCALE_SMOOTH);
 JLabel cuadro_desayuno= new JLabel(new ImageIcon(cuadrar_imagen_desayuno));
 cuadro_imagen.setBounds(0,0,700,866);
@@ -53,7 +53,7 @@ boton_cancelar.setFocusPainted(false);
 
 
 
-ImageIcon imagen_boton_cancelar=new ImageIcon("Imagenes\\cancelar.png");
+ImageIcon imagen_boton_cancelar=new ImageIcon("src\\main\\Imagenes\\cancelar.png");
 
 Image cuadrar_imagen_boton_cancelar=imagen_boton_cancelar.getImage().getScaledInstance(93, 34,Image.SCALE_SMOOTH);
 
