@@ -6,12 +6,18 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ReconocimientoFacial {
 
     private JFrame frame_reconocimiento;
     private JLabel uploaded_image_label;
     private BufferedImage uploaded_image;
+    private final String ESTADO_COMEDOR_FILE = "C:/Users/PC 1500/Desktop/SGCU-Grupo-10/src/main/db/estado_comedor.txt";
 
     public ReconocimientoFacial() {
         initialize();
@@ -89,11 +95,15 @@ public class ReconocimientoFacial {
             }
 
             boolean matchFound = false;
+            String cedulaReconocida = null;
+
             for (File imageFile : reconocimientoDir.listFiles()) {
                 try {
                     BufferedImage dbImage = ImageIO.read(imageFile);
                     if (compareImages(uploaded_image, dbImage)) {
                         matchFound = true;
+                        // Extraer la cédula del nombre del archivo (asumiendo formato cedula.png)
+                        cedulaReconocida = imageFile.getName().replace(".png", "");
                         break;
                     }
                 } catch (IOException ex) {
@@ -101,8 +111,15 @@ public class ReconocimientoFacial {
                 }
             }
 
-            if (matchFound) {
-                JOptionPane.showMessageDialog(frame_reconocimiento, "Acceso concedido.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            if (matchFound && cedulaReconocida != null) {
+                Map<String, String> estadoComedor = readEstadoComedor();
+                if (estadoComedor.containsKey(cedulaReconocida) && estadoComedor.get(cedulaReconocida).equals("entered")) {
+                    JOptionPane.showMessageDialog(frame_reconocimiento, "La persona con cédula " + cedulaReconocida + " ya ha entrado al comedor.", "Acceso Denegado", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    estadoComedor.put(cedulaReconocida, "entered");
+                    writeEstadoComedor(estadoComedor);
+                    JOptionPane.showMessageDialog(frame_reconocimiento, "Acceso concedido para la cédula: " + cedulaReconocida, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                }
             } else {
                 JOptionPane.showMessageDialog(frame_reconocimiento, "Acceso denegado.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -135,6 +152,36 @@ public class ReconocimientoFacial {
 
     public void mostrar() {
         frame_reconocimiento.setVisible(true);
+    }
+
+    private Map<String, String> readEstadoComedor() {
+        Map<String, String> estado = new HashMap<>();
+        File file = new File(ESTADO_COMEDOR_FILE);
+        if (!file.exists()) {
+            return estado;
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(":");
+                if (parts.length == 2) {
+                    estado.put(parts[0], parts[1]);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error al leer el archivo de estado del comedor: " + e.getMessage());
+        }
+        return estado;
+    }
+
+    private void writeEstadoComedor(Map<String, String> estado) {
+        try (FileWriter fw = new FileWriter(ESTADO_COMEDOR_FILE)) {
+            for (Map.Entry<String, String> entry : estado.entrySet()) {
+                fw.write(entry.getKey() + ":" + entry.getValue() + "\n");
+            }
+        } catch (IOException e) {
+            System.err.println("Error al escribir en el archivo de estado del comedor: " + e.getMessage());
+        }
     }
 
     public static void main(String[] args) {

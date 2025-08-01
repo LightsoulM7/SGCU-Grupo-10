@@ -1,6 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -16,9 +20,12 @@ public class gastos_fijos {
     private JTextField sueldo_mensual_field;
     private JTextField id_empleado_field;
     private JButton guardar_gastos;
+    private JLabel total_gastos_label;
+    private final String GASTOS_FILE = "C:/Users/PC 1500/Desktop/SGCU-Grupo-10/src/main/db/gastos_fijos.txt";
 
     public gastos_fijos() {
         initialize();
+        calculateTotalGastos(); // Calculate total on startup
     }
 
     private void initialize() {
@@ -35,6 +42,12 @@ public class gastos_fijos {
         ImageIcon fondo = new ImageIcon("../../Imagenes/cuadro_azul_ucv.png");
         JLabel cuadro_imagen = new JLabel(fondo);
         cuadro_imagen.setBounds(0, 0, 700, 866);
+
+        total_gastos_label = new JLabel("Total Gastos: 0.00");
+        total_gastos_label.setBounds(128, 180, 450, 30);
+        total_gastos_label.setFont(new Font("Arial", Font.BOLD, 20));
+        total_gastos_label.setForeground(Color.BLACK);
+        pantalla.add(total_gastos_label);
 
         String tipo_gasto[] = {"Seleccione tipo de gasto", "Servicio", "Sueldo de Empleado"};
         tipo_gasto_combo = new JComboBox<>(tipo_gasto);
@@ -164,9 +177,8 @@ public class gastos_fijos {
                 } else {
                     try {
                         double monto = Double.parseDouble(monto_periodo_field.getText());
-                        String mensaje = String.format("Gasto de Servicio Registrado:\nTipo: %s\nMonto: %.2f", servicios_combo.getSelectedItem(), monto);
-                        JOptionPane.showMessageDialog(frame_gastos_fijos, mensaje, "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
-                        resetForm();
+                        String tipo = (String) servicios_combo.getSelectedItem();
+                        saveGasto(tipo, monto);
                     } catch (NumberFormatException ex) {
                         JOptionPane.showMessageDialog(frame_gastos_fijos, "Monto del periodo debe ser un número válido.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
                     }
@@ -178,9 +190,8 @@ public class gastos_fijos {
                     try {
                         double sueldo = Double.parseDouble(sueldo_mensual_field.getText());
                         int idEmpleado = Integer.parseInt(id_empleado_field.getText());
-                        String mensaje = String.format("Gasto de Empleado Registrado:\nTipo: %s\nSueldo: %.2f\nID: %d", empleados_combo.getSelectedItem(), sueldo, idEmpleado);
-                        JOptionPane.showMessageDialog(frame_gastos_fijos, mensaje, "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
-                        resetForm();
+                        String tipo = (String) empleados_combo.getSelectedItem() + " (ID: " + idEmpleado + ")";
+                        saveGasto(tipo, sueldo);
                     } catch (NumberFormatException ex) {
                         JOptionPane.showMessageDialog(frame_gastos_fijos, "Sueldo Mensual y/o ID Empleado deben ser números válidos.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
                     }
@@ -201,7 +212,7 @@ public class gastos_fijos {
         pantalla.add(cuadro_imagen);
 
         JButton btnBack = new JButton("Atrás");
-        btnBack.setBounds(580, 5, 93, 34);
+        btnBack.setBounds(10, 10, 93, 34);
         btnBack.addActionListener(e -> {
             frame_gastos_fijos.dispose();
             AdminMenu adminMenu = new AdminMenu();
@@ -267,6 +278,99 @@ public class gastos_fijos {
 
     public void mostrar() {
         frame_gastos_fijos.setVisible(true);
+    }
+
+    private void saveGasto(String tipo, double monto) {
+        String gastoEntry = String.format("%s:%.2f", tipo, monto);
+        if (isGastoDuplicado(tipo)) {
+            JOptionPane.showMessageDialog(frame_gastos_fijos, "Este gasto ya ha sido registrado.", "Gasto Duplicado", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Read existing expenses (excluding the first line which is the total)
+        StringBuilder existingExpenses = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(GASTOS_FILE))) {
+            String line = br.readLine(); // Skip the first line (total)
+            while ((line = br.readLine()) != null) {
+                existingExpenses.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            System.err.println("Error al leer el archivo de gastos para guardar: " + e.getMessage());
+        }
+
+        // Append the new expense
+        existingExpenses.append(gastoEntry).append("\n");
+
+        // Write all expenses back to the file (calculateTotalGastos will handle the total)
+        try (FileWriter fw = new FileWriter(GASTOS_FILE, false)) { // Overwrite the file
+            fw.write(existingExpenses.toString());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(frame_gastos_fijos, "Error al guardar el gasto: " + e.getMessage(), "Error de Archivo", JOptionPane.ERROR_MESSAGE);
+        }
+
+        JOptionPane.showMessageDialog(frame_gastos_fijos, "Gasto Registrado Exitosamente.\n" + gastoEntry, "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
+        resetForm();
+        calculateTotalGastos(); // Recalculate and rewrite total
+    }
+
+    private boolean isGastoDuplicado(String tipo) {
+        try (BufferedReader br = new BufferedReader(new FileReader(GASTOS_FILE))) {
+            br.readLine(); // Skip the first line (total)
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith(tipo + ":")) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error al leer el archivo de gastos para verificar duplicados: " + e.getMessage());
+        }
+        return false;
+    }
+
+    private void calculateTotalGastos() {
+        double total = 0.0;
+        StringBuilder expensesContent = new StringBuilder();
+        boolean firstLine = true;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(GASTOS_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (firstLine) {
+                    // Try to parse the first line as total, if not, it's an expense
+                    try {
+                        total = Double.parseDouble(line);
+                        firstLine = false; // First line was indeed the total
+                        continue; // Skip to next line
+                    } catch (NumberFormatException e) {
+                        // If not a number, treat it as an expense and continue processing
+                        // This line will be added to expensesContent
+                    }
+                }
+                // Process as an expense
+                try {
+                    String[] parts = line.split(":");
+                    if (parts.length == 2) {
+                        total += Double.parseDouble(parts[1]);
+                    }
+                    expensesContent.append(line).append("\n");
+                } catch (NumberFormatException e) {
+                    System.err.println("Error de formato en la línea de gasto: " + line);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error al leer el archivo de gastos para calcular el total: " + e.getMessage());
+        }
+
+        // Now, rewrite the file with the new total on the first line
+        try (FileWriter fw = new FileWriter(GASTOS_FILE, false)) { // false to overwrite
+            fw.write(String.format("%.2f\n", total));
+            fw.write(expensesContent.toString());
+        } catch (IOException e) {
+            System.err.println("Error al escribir el total en el archivo de gastos: " + e.getMessage());
+        }
+
+        total_gastos_label.setText(String.format("Total Gastos: %.2f", total));
     }
 
     public static void main(String[] args) {

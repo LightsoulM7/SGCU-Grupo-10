@@ -5,6 +5,14 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.File;
 
 public class gestion_insumos {
 
@@ -14,6 +22,7 @@ public class gestion_insumos {
     private JTextField nombre;
     private JTextField precio;
     private int lastInsumoIndex = 0;
+    private static final String COSTOS_VARIABLES_FILE = "../../db/CostosVariables.txt";
 
     public gestion_insumos() {
         initialize();
@@ -74,50 +83,14 @@ public class gestion_insumos {
         cantidad = createPlaceholderTextField("Cantidad");
         cantidad.setBounds(110, 300, 480, 66);
 
-        // RESTAURADO: DocumentFilter de cantidad para números decimales
-        ((AbstractDocument) cantidad.getDocument()).setDocumentFilter(new DocumentFilter() {
-            @Override
-            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-                if (string == null) return;
-                String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
-                String newText = currentText.substring(0, offset) + string + currentText.substring(offset);
-
-                if (isValidDecimalNumber(newText)) {
-                    super.insertString(fb, offset, string, attr);
-                }
-            }
-
-            @Override
-            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-                if (text == null) {
-                    super.replace(fb, offset, length, text, attrs);
-                    return;
-                }
-                String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
-                String newText = currentText.substring(0, offset) + text + currentText.substring(offset + length);
-
-                if (isValidDecimalNumber(newText)) {
-                    super.replace(fb, offset, length, text, attrs);
-                }
-            }
-
-            private boolean isValidDecimalNumber(String text) {
-                if (text.isEmpty()) {
-                    return true;
-                }
-                return text.matches("^\\d*\\.?\\d*$") && text.chars().filter(ch -> ch == '.').count() <= 1;
-            }
-        });
-
         nombre = createPlaceholderTextField("Nombre");
         nombre.setBounds(110, 370, 480, 66);
 
-        // DocumentFilter de nombre (ya estaba bien)
         ((AbstractDocument) nombre.getDocument()).setDocumentFilter(new DocumentFilter() {
             @Override
             public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
                 if (string == null) return;
-                if (string.matches("[a-zA-Z\\sáéíóúÉÓÚñÑ]*")) {
+                if (string.matches("[a-zA-Z\sáéíóúÉÓÚñÑ]*")) {
                     super.insertString(fb, offset, string, attr);
                 }
             }
@@ -127,7 +100,7 @@ public class gestion_insumos {
                     super.replace(fb, offset, length, text, attrs);
                     return;
                 }
-                if (text.matches("[a-zA-Z\\sáéíóúÉÓÚñÑ]*")) {
+                if (text.matches("[a-zA-Z\sáéíóúÉÓÚñÑ]*")) {
                     super.replace(fb, offset, length, text, attrs);
                 }
             }
@@ -135,41 +108,6 @@ public class gestion_insumos {
 
         precio = createPlaceholderTextField("Precio");
         precio.setBounds(110, 440, 480, 66);
-
-        // RESTAURADO: DocumentFilter de precio para números decimales
-        ((AbstractDocument) precio.getDocument()).setDocumentFilter(new DocumentFilter() {
-            @Override
-            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-                if (string == null) return;
-                String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
-                String newText = currentText.substring(0, offset) + string + currentText.substring(offset);
-
-                if (isValidDecimalNumber(newText)) {
-                    super.insertString(fb, offset, string, attr);
-                }
-            }
-
-            @Override
-            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-                if (text == null) {
-                    super.replace(fb, offset, length, text, attrs);
-                    return;
-                }
-                String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
-                String newText = currentText.substring(0, offset) + text + currentText.substring(offset + length);
-
-                if (isValidDecimalNumber(newText)) {
-                    super.replace(fb, offset, length, text, attrs);
-                }
-            }
-
-            private boolean isValidDecimalNumber(String text) {
-                if (text.isEmpty()) {
-                    return true;
-                }
-                return text.matches("^\\d*\\.?\\d*$") && text.chars().filter(ch -> ch == '.').count() <= 1;
-            }
-        });
 
         JButton registrar_insumo = new JButton();
         int registrarWidth = 170;
@@ -183,48 +121,76 @@ public class gestion_insumos {
         Image scaledImagenRegistrar = originalImagenRegistrar.getImage().getScaledInstance(registrarWidth, registrarHeight, Image.SCALE_SMOOTH);
         registrar_insumo.setIcon(new ImageIcon(scaledImagenRegistrar));
 
-        JButton boton_cancelar = createCancelButton();
+        JButton btnAtras = new JButton("Atrás");
+        btnAtras.setBounds(50, 50, 100, 40);
+        btnAtras.addActionListener(e -> {
+            frame_gestion_insumos.dispose();
+            AdminMenu adminMenu = new AdminMenu();
+            adminMenu.mostrar();
+        });
+        cuadro_imagen.add(btnAtras);
 
         registrar_insumo.addActionListener(e -> {
             String selectedInsumo = (String) insumo_nutrientes.getSelectedItem();
             String cantidadInsumo = cantidad.getText();
             String nombreInsumo = nombre.getText();
-            String precioInsumo = precio.getText();
+            String precioInsumoStr = precio.getText();
 
-            // Validación: Si el campo contiene el placeholder O está vacío
-            if (insumo_nutrientes.getSelectedIndex() == 0 ||
-                cantidadInsumo.equals("Cantidad") || cantidadInsumo.isEmpty() ||
-                nombreInsumo.equals("Nombre") || nombreInsumo.isEmpty() ||
-                precioInsumo.equals("Precio") || precioInsumo.isEmpty()) {
-                JOptionPane.showMessageDialog(frame_gestion_insumos, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                String mensaje = String.format("Insumo Registrado:\nTipo: %s\nNombre: %s\nCantidad: %s\nPrecio: %s", selectedInsumo, nombreInsumo, cantidadInsumo, precioInsumo);
-                JOptionPane.showMessageDialog(frame_gestion_insumos, mensaje, "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
-                resetForm();
-            }
+            if (insumo_nutrientes.getSelectedIndex() == 0 ||                cantidadInsumo.equals("Cantidad") || cantidadInsumo.isEmpty() ||                nombreInsumo.equals("Nombre") || nombreInsumo.isEmpty() ||                precioInsumoStr.equals("Precio") || precioInsumoStr.isEmpty()) {                JOptionPane.showMessageDialog(frame_gestion_insumos, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);            } else if (!cantidadInsumo.matches("^\\d*\\.?\\d*$") || !precioInsumoStr.matches("^\\d*\\.?\\d*$")) {                JOptionPane.showMessageDialog(frame_gestion_insumos, "Cantidad y Precio deben ser números válidos.", "Error de Formato", JOptionPane.ERROR_MESSAGE);            } else {                try {                    double precioInsumo = Double.parseDouble(precioInsumoStr);                    saveInsumoToCostosVariables(selectedInsumo, nombreInsumo, cantidadInsumo, precioInsumo);                    String mensaje = String.format("Insumo Registrado:\nTipo: %s\nNombre: %s\nCantidad: %s\nPrecio: %.2f", selectedInsumo, nombreInsumo, cantidadInsumo, precioInsumo);                    JOptionPane.showMessageDialog(frame_gestion_insumos, mensaje, "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);                    resetForm();                    frame_gestion_insumos.revalidate();                    frame_gestion_insumos.repaint();                } catch (NumberFormatException ex) {                    JOptionPane.showMessageDialog(frame_gestion_insumos, "Error al convertir precio o cantidad a número.", "Error de Formato", JOptionPane.ERROR_MESSAGE);                } catch (IOException ex) {                    JOptionPane.showMessageDialog(frame_gestion_insumos, "Error al guardar el insumo: " + ex.getMessage(), "Error de Archivo", JOptionPane.ERROR_MESSAGE);                }            }
         });
         
-        // MouseListener en el JPanel principal para quitar el foco
-        pantalla.addMouseListener(new MouseAdapter() {
+pantalla.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (cantidad.isFocusOwner() || nombre.isFocusOwner() || precio.isFocusOwner()) {
-                    pantalla.requestFocusInWindow(); // Quita el foco de los JTextFields
+                    pantalla.requestFocusInWindow();
                 }
             }
         });
-        pantalla.setFocusable(true); // Necesario para que el JPanel pueda recibir foco
-
+        pantalla.setFocusable(true);
 
         pantalla.add(insumo_nutrientes);
         pantalla.add(cantidad);
         pantalla.add(nombre);
         pantalla.add(precio);
         pantalla.add(registrar_insumo);
-        pantalla.add(boton_cancelar);
-        pantalla.add(cuadro_imagen); // cuadro_imagen debe añadirse después de otros componentes si los contiene
+        pantalla.add(cuadro_imagen);
 
         frame_gestion_insumos.setVisible(true);
+    }
+
+    private void saveInsumoToCostosVariables(String tipo, String nombre, String cantidad, double precio) throws IOException {
+        File file = new File(COSTOS_VARIABLES_FILE);
+        double currentTotal = 0.0;
+        StringBuilder fileContent = new StringBuilder();
+
+        if (file.exists() && file.length() > 0) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String firstLine = reader.readLine();
+                if (firstLine != null && !firstLine.trim().isEmpty()) {
+                    try {
+                        currentTotal = Double.parseDouble(firstLine.trim());
+                    } catch (NumberFormatException e) {
+                        System.err.println("Advertencia: La primera línea de CostosVariables.txt no es un número válido. Se reiniciará el total.");
+                        currentTotal = 0.0;
+                    }
+                }
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    fileContent.append(line).append(System.lineSeparator());
+                }
+            }
+        }
+
+        currentTotal += precio;
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write(String.format("%.2f", currentTotal));
+            writer.newLine();
+            writer.write(fileContent.toString());
+            writer.write(String.format("Tipo: %s, Nombre: %s, Cantidad: %s, Precio: %.2f", tipo, nombre, cantidad, precio));
+            writer.newLine();
+        }
     }
 
     private void resetForm() {
@@ -232,29 +198,25 @@ public class gestion_insumos {
         lastInsumoIndex = 0;
         insumo_nutrientes.setForeground(Color.GRAY);
         
-        // Restablecer los text fields a su estado de placeholder inicial
         resetPlaceholderTextFieldVisual(cantidad, "Cantidad");
         resetPlaceholderTextFieldVisual(nombre, "Nombre");
         resetPlaceholderTextFieldVisual(precio, "Precio");
     }
 
-    // Método auxiliar para restablecer visualmente el placeholder
     private void resetPlaceholderTextFieldVisual(JTextField textField, String placeholder) {
         textField.setText(placeholder);
         textField.setForeground(Color.GRAY);
     }
 
-    // Este método contiene la lógica del FocusListener para el placeholder
     private JTextField createPlaceholderTextField(String placeholder) {
         JTextField textField = new JTextField(placeholder);
         textField.setHorizontalAlignment(JTextField.CENTER);
         textField.setFont(new Font("Inter", Font.BOLD, 24));
-        textField.setForeground(Color.GRAY); // Color inicial del placeholder
+        textField.setForeground(Color.GRAY);
 
         textField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-                // Si el texto actual es el placeholder Y el color es gris, bórralo y cambia a negro
                 if (textField.getText().equals(placeholder) && textField.getForeground().equals(Color.GRAY)) {
                     textField.setText("");
                     textField.setForeground(Color.BLACK);
@@ -263,33 +225,38 @@ public class gestion_insumos {
 
             @Override
             public void focusLost(FocusEvent e) {
-                // Si el campo está vacío al perder el foco, restaura el placeholder y el color gris
                 if (textField.getText().isEmpty()) {
                     textField.setText(placeholder);
                     textField.setForeground(Color.GRAY);
                 }
             }
         });
+
+        textField.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                updatePlaceholder(textField, placeholder);
+            }
+            public void removeUpdate(DocumentEvent e) {
+                updatePlaceholder(textField, placeholder);
+            }
+            public void changedUpdate(DocumentEvent e) {
+                updatePlaceholder(textField, placeholder);
+            }
+
+            private void updatePlaceholder(JTextField tf, String ph) {
+                if (tf.getText().isEmpty()) {
+                    tf.setForeground(Color.GRAY);
+                    // Only set text if it's not already the placeholder to avoid infinite loop
+                    if (!tf.getText().equals(ph)) {
+                        tf.setText(ph);
+                    }
+                } else if (tf.getForeground().equals(Color.GRAY) && !tf.getText().equals(ph)) {
+                    tf.setForeground(Color.BLACK);
+                }
+            }
+        });
+
         return textField;
-    }
-
-    private JButton createCancelButton() {
-        JButton boton_cancelar = new JButton();
-        int cancelWidth = 93;
-        int cancelHeight = 34;
-
-        boton_cancelar.setBounds(580, 5, cancelWidth, cancelHeight);
-        boton_cancelar.setOpaque(false);
-        boton_cancelar.setContentAreaFilled(false);
-        boton_cancelar.setFocusPainted(false);
-        boton_cancelar.setBorderPainted(false);
-
-        ImageIcon originalImagenCancelar = new ImageIcon("../../Imagenes/cancelar.png");
-        Image scaledImagenCancelar = originalImagenCancelar.getImage().getScaledInstance(cancelWidth, cancelHeight, Image.SCALE_SMOOTH);
-        boton_cancelar.setIcon(new ImageIcon(scaledImagenCancelar));
-
-        boton_cancelar.addActionListener(e -> frame_gestion_insumos.dispose());
-        return boton_cancelar;
     }
 
     public void mostrar() {

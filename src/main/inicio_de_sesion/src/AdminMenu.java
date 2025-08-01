@@ -80,23 +80,11 @@ public class AdminMenu {
         });
         fondo_label.add(btnConsultarMenu);
 
-        // Botón Datos de Consumo
-        JButton btnDatosConsumo = new JButton("Datos de Consumo");
-        btnDatosConsumo.setBounds(150, 510, 400, 80);
-        btnDatosConsumo.setFont(new Font("Arial", Font.BOLD, 24));
-        btnDatosConsumo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame_admin_menu.dispose();
-                DatosConsumo datosConsumo = new DatosConsumo();
-                datosConsumo.mostrar();
-            }
-        });
-        fondo_label.add(btnDatosConsumo);
+        
 
         // Botón Reconocimiento
         JButton btnReconocimiento = new JButton("Reconocimiento");
-        btnReconocimiento.setBounds(150, 620, 400, 80);
+        btnReconocimiento.setBounds(150, 510, 400, 80);
         btnReconocimiento.setFont(new Font("Arial", Font.BOLD, 24));
         btnReconocimiento.addActionListener(new ActionListener() {
             @Override
@@ -110,7 +98,7 @@ public class AdminMenu {
 
         // Botón Gestion de menu
         JButton btnGestionMenu = new JButton("Gestion de menu");
-        btnGestionMenu.setBounds(150, 730, 400, 80);
+        btnGestionMenu.setBounds(150, 620, 400, 80);
         btnGestionMenu.setFont(new Font("Arial", Font.BOLD, 24));
         btnGestionMenu.addActionListener(new ActionListener() {
             @Override

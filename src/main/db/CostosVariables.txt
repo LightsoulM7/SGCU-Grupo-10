@@ -1,0 +1,9 @@
+502319.00
+Tipo: Lípidos, Nombre: tal, Cantidad: 123, Precio: 12.00
+Tipo: Lípidos, Nombre: asdad, Cantidad: 12313, Precio: 123123.00
+Tipo: Proteínas, Nombre: kk, Cantidad: 88, Precio: 99.00
+Tipo: Proteínas, Nombre: asdadasd, Cantidad: 112313, Precio: 123123.00
+Tipo: Lípidos, Nombre: lkj, Cantidad: 8798, Precio: 9698.00
+Tipo: Proteínas, Nombre: 
+sdadsa, Cantidad: 12313, Precio: 123132.00
+Tipo: Proteínas, Nombre: adadsasd, Cantidad: 12312, Precio: 123132.00
