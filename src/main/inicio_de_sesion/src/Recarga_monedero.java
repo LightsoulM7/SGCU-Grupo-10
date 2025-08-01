@@ -23,10 +23,12 @@ public class Recarga_monedero {
     private final Calendar maxDate = Calendar.getInstance();
     private final Calendar minDate = Calendar.getInstance();
     private String cedulaUsuario;
+    private String userType;
     private final String usuarios_file_path = "../../db/usuarios.txt";
 
-    public Recarga_monedero(String cedula) {
+    public Recarga_monedero(String cedula, String userType) {
         this.cedulaUsuario = cedula;
+        this.userType = userType;
         maxDate.set(2030, Calendar.AUGUST, 31);
         minDate.set(2000, Calendar.JANUARY, 1);
         initialize();
@@ -209,7 +211,11 @@ public class Recarga_monedero {
         btnAtras.setBounds(50, 50, 100, 40);
         btnAtras.addActionListener(e -> {
             frame.dispose();
-            new MenuPrincipal(cedulaUsuario).mostrar();
+            if ("admin".equals(userType)) {
+                new AdminMenu().mostrar();
+            } else {
+                new MenuPrincipal(cedulaUsuario).mostrar();
+            }
         });
         cuadro_imagen.add(btnAtras);
         cuadro_imagen.add(metodoPagoCombo);
@@ -545,13 +551,14 @@ public class Recarga_monedero {
         try {
             List<String> fileContent = new ArrayList<>();
             boolean userFound = false;
+            double newSaldo = 0.0; // Declare newSaldo here
             try (BufferedReader reader = new BufferedReader(new FileReader(usuarios_file_path))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     String[] parts = line.split(",");
                     if (parts.length == 4 && parts[0].trim().equals(cedulaUsuario)) {
                         double currentSaldo = Double.parseDouble(parts[3].trim());
-                        double newSaldo = currentSaldo + montoRecarga;
+                        newSaldo = currentSaldo + montoRecarga;
                         fileContent.add(parts[0] + "," + parts[1] + "," + parts[2] + "," + String.format("%.2f", newSaldo));
                         userFound = true;
                     } else {
@@ -567,7 +574,7 @@ public class Recarga_monedero {
                         writer.newLine();
                     }
                 }
-                JOptionPane.showMessageDialog(frame, "Recarga exitosa! Su nuevo saldo es: " + String.format("%.2f", getSaldoActual(cedulaUsuario)) + " Bs.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Recarga exitosa! Su nuevo saldo es: " + String.format("%.2f", newSaldo) + " Bs.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(frame, "Usuario no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -598,6 +605,6 @@ public class Recarga_monedero {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Recarga_monedero("12345678").mostrar());
+        SwingUtilities.invokeLater(() -> new Recarga_monedero("12345678", "admin").mostrar());
     }
 }

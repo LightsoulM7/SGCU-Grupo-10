@@ -34,14 +34,14 @@ public class MenuSelectionScreen {
         panel.add(fondo_label);
 
         JButton btnDesayunoCena = new JButton();
-        btnDesayunoCena.setBounds(250, 300, 209, 72);
+        btnDesayunoCena.setBounds(250, 300, 150, 50);
         btnDesayunoCena.setOpaque(false);
         btnDesayunoCena.setContentAreaFilled(false);
         btnDesayunoCena.setFocusPainted(false);
         ImageIcon imagen_boton_desayuno = new ImageIcon("../../Imagenes/Desayuno.png");
-        Image desayuno = imagen_boton_desayuno.getImage().getScaledInstance(209, 72, Image.SCALE_SMOOTH);
+        Image desayuno = imagen_boton_desayuno.getImage().getScaledInstance(150, 50, Image.SCALE_SMOOTH);
         JLabel label_boton_desayuno = new JLabel(new ImageIcon(desayuno));
-        label_boton_desayuno.setBounds(250, 300, 209, 72);
+        label_boton_desayuno.setBounds(250, 300, 150, 50);
         btnDesayunoCena.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -57,14 +57,14 @@ public class MenuSelectionScreen {
         fondo_label.add(label_boton_desayuno);
 
         JButton btnAlmuerzo = new JButton();
-        btnAlmuerzo.setBounds(250, 450, 209, 72);
+        btnAlmuerzo.setBounds(250, 400, 150, 50);
         btnAlmuerzo.setOpaque(false);
         btnAlmuerzo.setContentAreaFilled(false);
         btnAlmuerzo.setFocusPainted(false);
         ImageIcon imagen_boton_almuerzo = new ImageIcon("../../Imagenes/Almuerzo.png");
-        Image almuerzo = imagen_boton_almuerzo.getImage().getScaledInstance(209, 72, Image.SCALE_SMOOTH);
+        Image almuerzo = imagen_boton_almuerzo.getImage().getScaledInstance(150, 50, Image.SCALE_SMOOTH);
         JLabel label_boton_almuerzo = new JLabel(new ImageIcon(almuerzo));
-        label_boton_almuerzo.setBounds(250, 450, 209, 72);
+        label_boton_almuerzo.setBounds(250, 400, 150, 50);
         btnAlmuerzo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -80,7 +80,7 @@ public class MenuSelectionScreen {
         fondo_label.add(label_boton_almuerzo);
 
         JButton btnBack = new JButton("Atrás");
-        btnBack.setBounds(50, 50, 100, 40);
+        btnBack.setBounds(50, 50, 80, 30);
         btnBack.addActionListener(e -> {
             frame_menu_selection.dispose();
             new MenuPrincipal(cedulaUsuario).mostrar();

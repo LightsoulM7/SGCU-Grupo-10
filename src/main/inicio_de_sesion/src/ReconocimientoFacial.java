@@ -20,6 +20,7 @@ public class ReconocimientoFacial {
     private JFrame frame_reconocimiento;
     private JLabel uploaded_image_label;
     private BufferedImage uploaded_image;
+    private JComboBox<String> menu_selection_combo;
     private final String ESTADO_COMEDOR_FILE = "../../db/estado_comedor.txt";
     private final String USUARIOS_FILE = "../../db/usuarios.txt";
     private final String CEDULAS_COMUNIDAD_FILE = "../../db/cedulasComunidad.txt";
@@ -54,9 +55,15 @@ public class ReconocimientoFacial {
         lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
         pantalla.add(lblTitulo);
 
+        // --- SELECCION DE MENU ---
+        String[] menuOptions = {"Desayuno", "Almuerzo"};
+        menu_selection_combo = new JComboBox<>(menuOptions);
+        menu_selection_combo.setBounds(250, 160, 200, 30);
+        pantalla.add(menu_selection_combo);
+
         // --- BOTONES ---
         JButton btnSubirImagen = new JButton("Subir Imagen");
-        btnSubirImagen.setBounds(250, 200, 200, 50);
+        btnSubirImagen.setBounds(250, 210, 200, 50);
         pantalla.add(btnSubirImagen);
 
         JButton btnComparar = new JButton("Comparar");
@@ -122,11 +129,13 @@ public class ReconocimientoFacial {
             if (matchFound && cedulaReconocida != null) {
                 Map<String, String> estadoComedor = readEstadoComedor();
                 String userRole = getUserRole(cedulaReconocida);
+                String selectedMenuType = (String) menu_selection_combo.getSelectedItem();
+                String estadoKey = cedulaReconocida + ":" + selectedMenuType;
 
-                if (estadoComedor.containsKey(cedulaReconocida) && estadoComedor.get(cedulaReconocida).equals("entered")) {
-                    JOptionPane.showMessageDialog(frame_reconocimiento, "La persona con cédula " + cedulaReconocida + " ya ha entrado al comedor.", "Acceso Denegado", JOptionPane.WARNING_MESSAGE);
+                if (estadoComedor.containsKey(estadoKey) && estadoComedor.get(estadoKey).equals("entered")) {
+                    JOptionPane.showMessageDialog(frame_reconocimiento, "La persona con cédula " + cedulaReconocida + " ya ha entrado al comedor para " + selectedMenuType.toLowerCase() + ".", "Acceso Denegado", JOptionPane.WARNING_MESSAGE);
                 } else {
-                    String[] menuDetails = getMenuDetails("Almuerzo"); // Asumimos "Almuerzo" como la comida
+                    String[] menuDetails = getMenuDetails(selectedMenuType);
                     if (menuDetails != null) {
                         String ingredients = menuDetails[1];
                         double merma = Double.parseDouble(menuDetails[2]);
@@ -137,14 +146,14 @@ public class ReconocimientoFacial {
 
                         if (currentBalance >= mealCost) {
                             updateSaldo(cedulaReconocida, currentBalance - mealCost);
-                            estadoComedor.put(cedulaReconocida, "entered");
+                            estadoComedor.put(estadoKey, "entered");
                             writeEstadoComedor(estadoComedor);
                             JOptionPane.showMessageDialog(frame_reconocimiento, "Acceso concedido para la cédula: " + cedulaReconocida + ". Costo de la comida: " + String.format("%.2f", mealCost) + " Bs. Saldo restante: " + String.format("%.2f", getSaldoActual(cedulaReconocida)) + " Bs.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                         } else {
                             JOptionPane.showMessageDialog(frame_reconocimiento, "Saldo insuficiente para la cédula: " + cedulaReconocida + ". Costo de la comida: " + String.format("%.2f", mealCost) + " Bs. Saldo actual: " + String.format("%.2f", currentBalance) + " Bs.", "Saldo Insuficiente", JOptionPane.WARNING_MESSAGE);
                         }
                     } else {
-                        JOptionPane.showMessageDialog(frame_reconocimiento, "Menú de almuerzo no disponible para calcular el costo.", "Error de Menú", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(frame_reconocimiento, "Menú de " + selectedMenuType.toLowerCase() + " no disponible para calcular el costo.", "Error de Menú", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } else {
@@ -191,8 +200,8 @@ public class ReconocimientoFacial {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(":");
-                if (parts.length == 2) {
-                    estado.put(parts[0], parts[1]);
+                if (parts.length == 3) { // Ahora esperamos cedula:tipo_comida:estado
+                    estado.put(parts[0] + ":" + parts[1], parts[2]);
                 }
             }
         } catch (IOException e) {

@@ -51,7 +51,7 @@ public class MenuDisplayScreen {
             menuArea.setOpaque(false);
             menuArea.setEditable(false);
             menuArea.setForeground(Color.WHITE);
-            menuArea.setBounds(100, 200, 500, 300);
+            menuArea.setBounds(100, 200, 500, 200);
             fondo_label.add(menuArea);
 
         } else {
@@ -63,7 +63,7 @@ public class MenuDisplayScreen {
         }
 
         JButton btnBack = new JButton("Atrás");
-        btnBack.setBounds(50, 50, 100, 40);
+        btnBack.setBounds(50, 50, 80, 30);
         btnBack.addActionListener(e -> {
             frame_menu_display.dispose();
             if ("user".equals(userType)) {

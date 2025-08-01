@@ -194,19 +194,19 @@ public class EditarMenu {
 
         // --- BOTONES DE ACCIÓN ---
         JButton btnSaveChanges = new JButton("Guardar Cambios");
-        btnSaveChanges.setBounds(100, 690, 240, 50);
+        btnSaveChanges.setBounds(100, 690, 180, 40);
         pantalla.add(btnSaveChanges);
 
         JButton btnDeleteMenu = new JButton("Eliminar Seleccionado");
-        btnDeleteMenu.setBounds(360, 620, 240, 50);
+        btnDeleteMenu.setBounds(300, 690, 180, 40);
         pantalla.add(btnDeleteMenu);
 
         JButton btnClear = new JButton("Limpiar Campos / Nuevo");
-        btnClear.setBounds(100, 680, 500, 50);
+        btnClear.setBounds(500, 690, 180, 40);
         pantalla.add(btnClear);
 
         JButton btnAtras = new JButton("Atrás");
-        btnAtras.setBounds(20, 20, 100, 40);
+        btnAtras.setBounds(20, 20, 80, 30);
         pantalla.add(btnAtras);
 
         // --- ACCIONES ---

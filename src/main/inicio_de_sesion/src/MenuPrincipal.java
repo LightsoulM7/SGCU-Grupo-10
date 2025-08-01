@@ -49,7 +49,7 @@ public class MenuPrincipal {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame_menu_principal.dispose();
-                saldo saldoScreen = new saldo(cedulaUsuario);
+                saldo saldoScreen = new saldo(cedulaUsuario, "user");
                 saldoScreen.mostrar();
             }
         });
@@ -75,7 +75,7 @@ public class MenuPrincipal {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame_menu_principal.dispose();
-                Recarga_monedero recarga = new Recarga_monedero(cedulaUsuario);
+                Recarga_monedero recarga = new Recarga_monedero(cedulaUsuario, "user");
                 recarga.mostrar();
             }
         });

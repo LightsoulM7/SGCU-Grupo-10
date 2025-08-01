@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.BufferedWriter;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -19,7 +21,7 @@ public class gastos_fijos {
     private JComboBox<String> empleados_combo;
     private JTextField monto_periodo_field;
     private JTextField sueldo_mensual_field;
-    private JTextField id_empleado_field;
+    
     private JButton guardar_gastos;
     private JLabel total_gastos_label;
     private final String GASTOS_FILE = "../../db/gastos_fijos.txt";
@@ -124,28 +126,7 @@ public class gastos_fijos {
             }
         });
 
-        id_empleado_field = createPlaceholderTextField("ID Empleado");
-        id_empleado_field.setBounds(128, 400, 450, 50);
-        ((AbstractDocument) id_empleado_field.getDocument()).setDocumentFilter(new DocumentFilter() {
-            @Override
-            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-                if (string == null) return;
-                if (string.matches("\\d*")) {
-                    super.insertString(fb, offset, string, attr);
-                }
-            }
-
-            @Override
-            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-                if (text == null) {
-                    super.replace(fb, offset, length, text, attrs);
-                    return;
-                }
-                if (text.matches("\\d*")) {
-                    super.replace(fb, offset, length, text, attrs);
-                }
-            }
-        });
+        
 
         guardar_gastos = new JButton("Guardar Gastos");
         guardar_gastos.setBounds(250, 500, 200, 50);
@@ -164,7 +145,7 @@ public class gastos_fijos {
                 guardar_gastos.setBounds(250, 400, 200, 50);
             } else if (selection == 2) { // Empleado
                 updateFieldsVisibility(false, true);
-                guardar_gastos.setBounds(250, 500, 200, 50);
+                guardar_gastos.setBounds(250, 400, 200, 50);
             } else {
                 updateFieldsVisibility(false, false);
             }
@@ -185,16 +166,15 @@ public class gastos_fijos {
                     }
                 }
             } else if (selection == 2) { // Guardar Empleado
-                if (empleados_combo.getSelectedIndex() == 0 || sueldo_mensual_field.getText().equals("Sueldo Mensual") || sueldo_mensual_field.getText().isEmpty() || id_empleado_field.getText().equals("ID Empleado") || id_empleado_field.getText().isEmpty()) {
+                if (empleados_combo.getSelectedIndex() == 0 || sueldo_mensual_field.getText().equals("Sueldo Mensual") || sueldo_mensual_field.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(frame_gastos_fijos, "Por favor, complete todos los campos de empleado.", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
                     try {
                         double sueldo = Double.parseDouble(sueldo_mensual_field.getText());
-                        int idEmpleado = Integer.parseInt(id_empleado_field.getText());
-                        String tipo = (String) empleados_combo.getSelectedItem() + " (ID: " + idEmpleado + ")";
+                        String tipo = (String) empleados_combo.getSelectedItem();
                         saveGasto(tipo, sueldo);
                     } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(frame_gastos_fijos, "Sueldo Mensual y/o ID Empleado deben ser números válidos.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(frame_gastos_fijos, "Sueldo Mensual debe ser un número válido.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -208,7 +188,7 @@ public class gastos_fijos {
         pantalla.add(monto_periodo_field);
         pantalla.add(empleados_combo);
         pantalla.add(sueldo_mensual_field);
-        pantalla.add(id_empleado_field);
+        
         pantalla.add(guardar_gastos);
         pantalla.add(cuadro_imagen);
 
@@ -229,7 +209,6 @@ public class gastos_fijos {
         monto_periodo_field.setVisible(servicioVisible);
         empleados_combo.setVisible(empleadoVisible);
         sueldo_mensual_field.setVisible(empleadoVisible);
-        id_empleado_field.setVisible(empleadoVisible);
         guardar_gastos.setVisible(servicioVisible || empleadoVisible);
     }
 
@@ -239,7 +218,6 @@ public class gastos_fijos {
         empleados_combo.setSelectedIndex(0);
         resetPlaceholderTextField(monto_periodo_field, "Monto del periodo");
         resetPlaceholderTextField(sueldo_mensual_field, "Sueldo Mensual");
-        resetPlaceholderTextField(id_empleado_field, "ID Empleado");
         updateFieldsVisibility(false, false);
     }
 
@@ -283,78 +261,80 @@ public class gastos_fijos {
 
     private void saveGasto(String tipo, double monto) {
         String gastoEntry = String.format("%s:%.2f", tipo, monto);
-        if (isGastoDuplicado(tipo)) {
-            JOptionPane.showMessageDialog(frame_gastos_fijos, "Este gasto ya ha sido registrado.", "Gasto Duplicado", JOptionPane.WARNING_MESSAGE);
-            return;
+        List<String> currentExpenses = new ArrayList<>();
+        boolean updated = false;
+
+        System.out.println("saveGasto: Generated tipo: " + tipo);
+        System.out.println("saveGasto: Generated gastoEntry: " + gastoEntry);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(GASTOS_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                currentExpenses.add(line);
+            }
+        } catch (IOException e) {
+            System.err.println("Error al leer el archivo de gastos: " + e.getMessage());
         }
 
-        System.out.println("Guardando gasto: " + gastoEntry);
-        try (BufferedWriter fw = new BufferedWriter(new FileWriter(GASTOS_FILE, true))) { // true para añadir al final
-            fw.write(gastoEntry);
-            fw.newLine();
-        } catch (IOException e) {
+        System.out.println("saveGasto: currentExpenses before update: " + currentExpenses);
+
+        for (int i = 0; i < currentExpenses.size(); i++) {
+            if (currentExpenses.get(i).startsWith(tipo + ":")) {
+                currentExpenses.set(i, gastoEntry);
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated) {
+            currentExpenses.add(gastoEntry);
+            System.out.println("saveGasto: Added new entry.");
+        } else {
+            System.out.println("saveGasto: Updated existing entry.");
+        }
+
+        System.out.println("saveGasto: currentExpenses after update: " + currentExpenses);
+
+        try (BufferedWriter fw = new BufferedWriter(new FileWriter(GASTOS_FILE, false))) { // Overwrite
+            for (String expense : currentExpenses) {
+                fw.write(expense);
+                fw.newLine();
+            }
+        }
+        catch (IOException e) {
             JOptionPane.showMessageDialog(frame_gastos_fijos, "Error al guardar el gasto: " + e.getMessage(), "Error de Archivo", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        JOptionPane.showMessageDialog(frame_gastos_fijos, "Gasto Registrado Exitosamente.\n" + gastoEntry, "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(frame_gastos_fijos, "Gasto " + (updated ? "actualizado" : "registrado") + " exitosamente.\n" + gastoEntry, "Operación Exitosa", JOptionPane.INFORMATION_MESSAGE);
         resetForm();
         calculateTotalGastos(); // Recalculate and rewrite total
     }
 
-    private boolean isGastoDuplicado(String tipo) {
-        try (BufferedReader br = new BufferedReader(new FileReader(GASTOS_FILE))) {
-            br.readLine(); // Skip the first line (total)
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.startsWith(tipo + ":")) {
-                    return true;
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error al leer el archivo de gastos para verificar duplicados: " + e.getMessage());
-        }
-        return false;
-    }
-
     private void calculateTotalGastos() {
         double total = 0.0;
-        StringBuilder expensesContent = new StringBuilder();
-        boolean firstLineSkipped = false; // Flag to skip the first line
-
+        System.out.println("calculateTotalGastos: Starting calculation.");
         try (BufferedReader br = new BufferedReader(new FileReader(GASTOS_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (!firstLineSkipped) {
-                    firstLineSkipped = true; // Skip the first line (previous total)
-                    continue;
-                }
-                System.out.println("Línea de gasto leída: " + line);
+                System.out.println("calculateTotalGastos: Reading line: " + line);
                 try {
                     String[] parts = line.split(":");
                     if (parts.length == 2) {
                         double montoGasto = Double.parseDouble(parts[1]);
                         total += montoGasto;
-                        System.out.println("Gasto procesado: " + parts[0] + ", Monto: " + montoGasto + ", Total acumulado: " + total);
+                        System.out.println("calculateTotalGastos: Parsed monto: " + montoGasto + ", Current total: " + total);
                     }
-                    expensesContent.append(line).append("\n");
-                } catch (NumberFormatException e) {
+                }
+                catch (NumberFormatException e) {
                     System.err.println("Error de formato en la línea de gasto: " + line);
                 }
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             System.err.println("Error al leer el archivo de gastos para calcular el total: " + e.getMessage());
         }
-
-        System.out.println("Total final antes de reescribir: " + total);
-        // Ahora, reescribir el archivo con el nuevo total en la primera línea
-        try (BufferedWriter fw = new BufferedWriter(new FileWriter(GASTOS_FILE, false))) { // false para sobrescribir
-            fw.write(String.format("%.2f\n", total));
-            fw.write(expensesContent.toString());
-        } catch (IOException e) {
-            System.err.println("Error al escribir el total en el archivo de gastos: " + e.getMessage());
-        }
-
+        System.out.println("calculateTotalGastos: Final total: " + total);
         total_gastos_label.setText(String.format("Total Gastos: %.2f", total));
     }
 

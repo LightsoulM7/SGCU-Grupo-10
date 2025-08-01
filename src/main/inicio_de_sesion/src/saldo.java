@@ -10,9 +10,11 @@ public class saldo {
 
     private JFrame frame_saldo;
     private String cedulaUsuario;
+    private String userType;
 
-    public saldo(String cedula) {
+    public saldo(String cedula, String userType) {
         this.cedulaUsuario = cedula;
+        this.userType = userType;
         initialize();
     }
 
@@ -44,7 +46,11 @@ public class saldo {
         btnBack.setBounds(50, 50, 100, 40);
         btnBack.addActionListener(e -> {
             frame_saldo.dispose();
-            new MenuPrincipal(cedulaUsuario).mostrar();
+            if ("admin".equals(userType)) {
+                new AdminMenu().mostrar();
+            } else {
+                new MenuPrincipal(cedulaUsuario).mostrar();
+            }
         });
         fondo_label.add(btnBack);
     }
@@ -69,6 +75,6 @@ public class saldo {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new saldo("12345678").mostrar()); // Cédula de ejemplo para pruebas
+        SwingUtilities.invokeLater(() -> new saldo("12345678", "user").mostrar());
     }
 }

@@ -96,7 +96,7 @@ public class AdminMenu {
         btnRecargarMonedero.setForeground(Color.WHITE);
         btnRecargarMonedero.addActionListener(e -> {
             frame_admin_menu.dispose();
-            new Recarga_monedero(inicio_de_sesion.cedulaUsuarioLogueado).mostrar();
+            new Recarga_monedero(inicio_de_sesion.cedulaUsuarioLogueado, "admin").mostrar();
         });
         fondo_label.add(btnRecargarMonedero);
 
@@ -107,7 +107,7 @@ public class AdminMenu {
         btnConsultarSaldo.setForeground(Color.WHITE);
         btnConsultarSaldo.addActionListener(e -> {
             frame_admin_menu.dispose();
-            new saldo(inicio_de_sesion.cedulaUsuarioLogueado).mostrar();
+            new saldo(inicio_de_sesion.cedulaUsuarioLogueado, "admin").mostrar();
         });
         fondo_label.add(btnConsultarSaldo);
 
