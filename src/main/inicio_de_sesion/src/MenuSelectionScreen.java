@@ -29,14 +29,14 @@ public class MenuSelectionScreen {
         panel.add(fondo_label);
 
         // Botón Desayuno/Cena
-        JButton btnDesayunoCena = new JButton("Desayuno y Cena");
+        JButton btnDesayunoCena = new JButton("Desayuno");
         btnDesayunoCena.setBounds(200, 300, 300, 80);
         btnDesayunoCena.setFont(new Font("Arial", Font.BOLD, 24));
         btnDesayunoCena.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Lógica para abrir la pantalla de Desayuno/Cena
-                menu_desayuno_cena menuDesayunoCena = new menu_desayuno_cena();
+                menu_desayuno menuDesayunoCena = new menu_desayuno();
                 menuDesayunoCena.mostrar();
                 frame_menu_selection.dispose(); // Cierra la ventana actual
             }
@@ -63,8 +63,8 @@ public class MenuSelectionScreen {
         btnBack.setBounds(50, 50, 100, 40);
         btnBack.addActionListener(e -> {
             frame_menu_selection.dispose();
-            AdminMenu adminMenu = new AdminMenu();
-            adminMenu.mostrar();
+            MenuPrincipal menuPrincipal = new MenuPrincipal();
+            menuPrincipal.mostrar();
         });
         fondo_label.add(btnBack);
     }

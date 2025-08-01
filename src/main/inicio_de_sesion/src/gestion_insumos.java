@@ -81,19 +81,22 @@ public class gestion_insumos {
         precio.setBounds(110, 440, 480, 66);
 
         // --- BOTONES ---
-        JButton registrar_insumo_btn = new JButton();
-        registrar_insumo_btn.setBounds(210, 550, 264, 76);
-        registrar_insumo_btn.setOpaque(false);
-        registrar_insumo_btn.setContentAreaFilled(false);
-        registrar_insumo_btn.setFocusPainted(false);
-        registrar_insumo_btn.setBorderPainted(false);
+        JButton registrar_insumo=new JButton();
 
+
+registrar_insumo.setBounds(50,550,264,76);
+
+registrar_insumo.setOpaque(false);
+registrar_insumo.setContentAreaFilled(false);
+registrar_insumo.setFocusPainted(false);
         ImageIcon imagen_boton_registrar = new ImageIcon("../../Imagenes/Registrar_insumo.png");
         JLabel label_boton_registrar = new JLabel(imagen_boton_registrar);
-        label_boton_registrar.setBounds(210, 550, 264, 76);
+        label_boton_registrar.setBounds(50, 550, 264, 76);
+
+        JButton boton_cancelar = createCancelButton();
 
         // --- ACCIÓN DE REGISTRAR ---
-        registrar_insumo_btn.addActionListener(e -> {
+        registrar_insumo.addActionListener(e -> {
             String selectedInsumo = (String) insumo_nutrientes.getSelectedItem();
             String cantidadInsumo = cantidad.getText();
             String nombreInsumo = nombre.getText();
@@ -113,19 +116,10 @@ public class gestion_insumos {
         pantalla.add(cantidad);
         pantalla.add(nombre);
         pantalla.add(precio);
-        pantalla.add(registrar_insumo_btn);
+        pantalla.add(registrar_insumo);
         pantalla.add(label_boton_registrar);
+        pantalla.add(boton_cancelar);
         pantalla.add(cuadro_imagen); // El fondo siempre al final
-
-        // Botón Atrás
-        JButton btnBack = new JButton("Atrás");
-        btnBack.setBounds(580, 5, 93, 34);
-        btnBack.addActionListener(e -> {
-            frame_gestion_insumos.dispose();
-            AdminMenu adminMenu = new AdminMenu();
-            adminMenu.mostrar();
-        });
-        cuadro_imagen.add(btnBack);
 
         frame_gestion_insumos.setVisible(true);
     }
@@ -168,6 +162,23 @@ public class gestion_insumos {
             }
         });
         return textField;
+    }
+
+    private JButton createCancelButton() {
+        JButton boton_cancelar = new JButton();
+        boton_cancelar.setBounds(580, 5, 93, 34);
+        boton_cancelar.setOpaque(false);
+        boton_cancelar.setContentAreaFilled(false);
+        boton_cancelar.setFocusPainted(false);
+        boton_cancelar.setBorderPainted(false);
+
+        ImageIcon imagen_cancelar = new ImageIcon("../../Imagenes/cancelar.png");
+        JLabel label_cancelar = new JLabel(imagen_cancelar);
+        label_cancelar.setBounds(0, 0, 93, 34);
+        boton_cancelar.add(label_cancelar);
+
+        boton_cancelar.addActionListener(e -> frame_gestion_insumos.dispose());
+        return boton_cancelar;
     }
 
     public void mostrar() {

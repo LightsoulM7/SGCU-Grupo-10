@@ -64,8 +64,8 @@ public class MenuPrincipal {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame_menu_principal.dispose(); // Cierra la ventana actual
-                MenuSelectionScreen2 menuSelectionScreen2 = new MenuSelectionScreen2();
-                menuSelectionScreen2.mostrar(); // Muestra la nueva ventana de selección de menú
+                MenuSelectionScreen menuSelectionScreen = new MenuSelectionScreen();
+                menuSelectionScreen.mostrar(); // Muestra la nueva ventana de selección de menú
             }
         });
         fondo_label.add(btnConsultarMenu);

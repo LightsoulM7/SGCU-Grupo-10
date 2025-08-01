@@ -22,56 +22,43 @@ public class AdminMenu {
         JPanel panel = new JPanel(null);
         frame_admin_menu.add(panel);
 
-        ImageIcon fondo = new ImageIcon("../../Imagenes/cuadro_azul_ucv.png");
+        // Fondo de la pantalla
+        ImageIcon fondo = new ImageIcon("../../Imagenes/cuadro_azul_ucv.png"); // Ruta relativa
         JLabel fondo_label = new JLabel(fondo);
         fondo_label.setBounds(0, 0, 700, 866);
         panel.add(fondo_label);
 
-        int buttonWidth = 400;
-        int buttonHeight = 70;
-        int startY = 200;
-        int gap = 90;
-
-        JButton btnConsultarMenu = new JButton("Consultar Menú");
-        btnConsultarMenu.setBounds(150, startY, buttonWidth, buttonHeight);
-        btnConsultarMenu.setFont(new Font("Arial", Font.BOLD, 24));
-        btnConsultarMenu.addActionListener(e -> {
-            MenuSelectionScreen menuSelection = new MenuSelectionScreen();
-            menuSelection.mostrar();
-            frame_admin_menu.dispose();
-        });
-        fondo_label.add(btnConsultarMenu);
-
-        JButton btnConsultarSaldo = new JButton("Consultar Saldo");
-        btnConsultarSaldo.setBounds(150, startY + gap, buttonWidth, buttonHeight);
-        btnConsultarSaldo.setFont(new Font("Arial", Font.BOLD, 24));
-        btnConsultarSaldo.addActionListener(e -> {
-            saldo2 saldoView = new saldo2();
-            saldoView.mostrar();
-            frame_admin_menu.dispose();
-        });
-        fondo_label.add(btnConsultarSaldo);
-
-        JButton btnCostosVariables = new JButton("Gestión de Insumos");
-        btnCostosVariables.setBounds(150, startY + 2 * gap, buttonWidth, buttonHeight);
+        // Botón Gestión de Costos Variables
+        JButton btnCostosVariables = new JButton("Gestión de Costos Variables");
+        btnCostosVariables.setBounds(150, 300, 400, 80);
         btnCostosVariables.setFont(new Font("Arial", Font.BOLD, 24));
-        btnCostosVariables.addActionListener(e -> {
-            gestion_insumos gestionInsumos = new gestion_insumos();
-            gestionInsumos.mostrar();
-            frame_admin_menu.dispose();
+        btnCostosVariables.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Lógica para abrir gestion_insumos
+                gestion_insumos gestionInsumos = new gestion_insumos();
+                gestionInsumos.mostrar();
+                frame_admin_menu.dispose(); // Cierra la ventana actual
+            }
         });
         fondo_label.add(btnCostosVariables);
 
-        JButton btnCostosFijos = new JButton("Gestión de Gastos Fijos");
-        btnCostosFijos.setBounds(150, startY + 3 * gap, buttonWidth, buttonHeight);
+        // Botón Gestión de Costos Fijos
+        JButton btnCostosFijos = new JButton("Gestión de Costos Fijos");
+        btnCostosFijos.setBounds(150, 450, 400, 80);
         btnCostosFijos.setFont(new Font("Arial", Font.BOLD, 24));
-        btnCostosFijos.addActionListener(e -> {
-            gastos_fijos gastosFijos = new gastos_fijos();
-            gastosFijos.mostrar();
-            frame_admin_menu.dispose();
+        btnCostosFijos.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Lógica para abrir gastos_fijos
+                gastos_fijos gastosFijos = new gastos_fijos();
+                gastosFijos.mostrar();
+                frame_admin_menu.dispose(); // Cierra la ventana actual
+            }
         });
         fondo_label.add(btnCostosFijos);
 
+        // Botón de retroceso (opcional, pero útil)
         JButton btnBack = new JButton("Cerrar Sesión");
         btnBack.setBounds(50, 50, 150, 40);
         btnBack.addActionListener(e -> {

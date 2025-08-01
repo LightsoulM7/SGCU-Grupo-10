@@ -3,18 +3,18 @@ import javax.swing.*;
 
 
 import java.awt.*;
-public class menu_almuerzo{
+public class menu_desayuno{
     
     private JFrame menu;
-    public menu_almuerzo() {
+    public menu_desayuno() {
         initialize();
     }
     
     private void initialize() {
         menu = new JFrame();
-        menu.setTitle(" Menu Almuerzo");
+        menu.setTitle(" Menu Desayuno");
         menu.setSize(700, 866);
-    menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    menu.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         menu.setLocationRelativeTo(null);
     menu.setResizable(false);
         
@@ -25,14 +25,12 @@ JPanel pantalla = new JPanel(new BorderLayout());
         menu.add(pantalla);
         
 
-
-        ImageIcon fondo=new ImageIcon("../../Imagenes/cuadro_azul_ucv.png");
-
+ ImageIcon fondo=new ImageIcon("../../Imagenes/cuadro_azul_ucv.png");
 
         
     Image cuadrar_imagen=fondo.getImage().getScaledInstance(700, 866,Image.SCALE_SMOOTH);
 JLabel cuadro_imagen=new JLabel(new ImageIcon(cuadrar_imagen));
-        ImageIcon desayuno_cena=new ImageIcon("../../Imagenes/menu_almuerzo.png");
+        ImageIcon desayuno_cena=new ImageIcon("../../Imagenes/menu_desayuno.png");
         Image cuadrar_imagen_desayuno= desayuno_cena.getImage().getScaledInstance(465, 517,Image.SCALE_SMOOTH);
 JLabel cuadro_desayuno= new JLabel(new ImageIcon(cuadrar_imagen_desayuno));
 cuadro_imagen.setBounds(0,0,700,866);
@@ -73,11 +71,7 @@ JLabel label_boton_cancelar=new JLabel(new ImageIcon(cuadrar_imagen_boton_cancel
         pantalla.repaint();
 
 
-boton_cancelar.addActionListener(e -> {
-    menu.dispose();
-    MenuSelectionScreen menuSelectionScreen = new MenuSelectionScreen();
-    menuSelectionScreen.mostrar();
-});
+
 
 
 label_boton_cancelar.setBounds(580,5,93,34);
@@ -86,6 +80,11 @@ cuadro_imagen.add(boton_cancelar);
 cuadro_imagen.add(label_boton_cancelar);
 
 
+boton_cancelar.addActionListener(e -> {
+    menu.dispose();
+    MenuSelectionScreen menuSelectionScreen = new MenuSelectionScreen();
+    menuSelectionScreen.mostrar();
+});
 
     }
 
@@ -100,7 +99,7 @@ cuadro_imagen.add(label_boton_cancelar);
     }
     
     public static void main(String[] args) {
-      SwingUtilities.invokeLater(() -> new menu_almuerzo().mostrar());
+      SwingUtilities.invokeLater(() -> new menu_desayuno().mostrar());
             }
         }
 
