@@ -2,21 +2,31 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Recarga_monedero {
 
     private JFrame frame;
     private JComboBox<String> metodoPagoCombo;
     private JPanel panelPagoMovil;
-    private JTextField referenciaField, bancoField, fechaField;
+    private JTextField referenciaField, bancoField, fechaField, montoRecargaField;
     private final Calendar maxDate = Calendar.getInstance();
     private final Calendar minDate = Calendar.getInstance();
+    private String cedulaUsuario;
+    private final String usuarios_file_path = "../../db/usuarios.txt";
 
-    public Recarga_monedero() {
+    public Recarga_monedero(String cedula) {
+        this.cedulaUsuario = cedula;
         maxDate.set(2030, Calendar.AUGUST, 31);
         minDate.set(2000, Calendar.JANUARY, 1);
         initialize();
@@ -46,8 +56,8 @@ public class Recarga_monedero {
         metodoPagoCombo.setBackground(Color.WHITE);
 
         panelPagoMovil = new JPanel();
-        panelPagoMovil.setBounds(100, 180, 500, 350);
-        panelPagoMovil.setLayout(new GridLayout(7, 1, 10, 10));
+        panelPagoMovil.setBounds(100, 180, 500, 400); // Aumentar altura para el nuevo campo
+        panelPagoMovil.setLayout(new GridLayout(9, 1, 10, 10)); // Aumentar filas
         panelPagoMovil.setOpaque(false);
         panelPagoMovil.setVisible(false);
 
@@ -70,6 +80,46 @@ public class Recarga_monedero {
         JLabel lblValidacion = new JLabel("Validar Pago:", SwingConstants.CENTER);
         lblValidacion.setFont(new Font("Arial", Font.BOLD, 20));
         lblValidacion.setForeground(Color.WHITE);
+
+        montoRecargaField = new JTextField("Monto de Recarga");
+        estiloTextField(montoRecargaField, false); // No es referencia, pero necesita filtro de números
+        ((PlainDocument) montoRecargaField.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                if (string == null) return;
+                if (string.matches("\\d*\\.?\\d*")) { // Permite números y un punto decimal
+                    super.insertString(fb, offset, string, attr);
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                if (text == null) {
+                    super.replace(fb, offset, length, text, attrs);
+                    return;
+                }
+                if (text.matches("\\d*\\.?\\d*")) { // Permite números y un punto decimal
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+        });
+        montoRecargaField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (montoRecargaField.getText().equals("Monto de Recarga")) {
+                    montoRecargaField.setText("");
+                    montoRecargaField.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (montoRecargaField.getText().isEmpty()) {
+                    montoRecargaField.setText("Monto de Recarga");
+                    montoRecargaField.setForeground(Color.GRAY);
+                }
+            }
+        });
 
         referenciaField = new JTextField("Número de referencia");
         estiloTextField(referenciaField, true);
@@ -102,6 +152,7 @@ public class Recarga_monedero {
         panelPagoMovil.add(lblNumero);
         panelPagoMovil.add(lblBanco);
         panelPagoMovil.add(lblValidacion);
+        panelPagoMovil.add(montoRecargaField); // Nuevo campo
         panelPagoMovil.add(referenciaField);
         panelPagoMovil.add(bancoField);
         panelPagoMovil.add(fechaPanel);
@@ -109,10 +160,14 @@ public class Recarga_monedero {
         metodoPagoCombo.addActionListener(e -> {
             if (metodoPagoCombo.getSelectedItem().equals("Pago Móvil")) {
                 panelPagoMovil.setVisible(true);
+                if (montoRecargaField.getText().isEmpty()) {
+                    montoRecargaField.setText("Monto de Recarga");
+                    montoRecargaField.setForeground(Color.GRAY);
+                }
                 if (referenciaField.getText().isEmpty()) {
                     referenciaField.setText("Número de referencia");
                     referenciaField.setForeground(Color.GRAY);
-                    referenciaField.setFont(new Font("Arial", Font.BOLD, 18)); // Ensure font is bold when placeholder is set
+                    referenciaField.setFont(new Font("Arial", Font.BOLD, 18));
                 }
                 if (bancoField.getText().isEmpty()) {
                     bancoField.setText("Banco");
@@ -129,36 +184,40 @@ public class Recarga_monedero {
         btnRecargar.setContentAreaFilled(false);
         btnRecargar.setBorderPainted(false);
 
-        JButton btnCancelar = new JButton();
-        btnCancelar.setBounds(580, 5, 93, 34);
-        btnCancelar.setOpaque(false);
-        btnCancelar.setContentAreaFilled(false);
-        btnCancelar.setBorderPainted(false);
+        
+        
 
         ImageIcon iconRecargar = new ImageIcon("../../Imagenes/recarga_completa.png");
-        ImageIcon iconCancelar = new ImageIcon("../../Imagenes/cancelar.png");
+        
 
         Image imgRecargar = iconRecargar.getImage().getScaledInstance(262, 76, Image.SCALE_SMOOTH);
-        Image imgCancelar = iconCancelar.getImage().getScaledInstance(93, 34, Image.SCALE_SMOOTH);
+        
 
         JLabel lblRecargar = new JLabel(new ImageIcon(imgRecargar));
         lblRecargar.setBounds(200, 600, 262, 76);
 
-        JLabel lblCancelar = new JLabel(new ImageIcon(imgCancelar));
-        lblCancelar.setBounds(580, 5, 93, 34);
+        
+        
 
-        btnRecargar.addActionListener(e -> validarPago());
-        btnCancelar.addActionListener(e -> frame.dispose());
+        btnRecargar.addActionListener(e -> validarPagoYRecargar());
+        
 
         btnRecargar.addMouseListener(crearHoverEffect(lblRecargar, iconRecargar, 262, 76));
-        btnCancelar.addMouseListener(crearHoverEffect(lblCancelar, iconCancelar, 93, 34));
+        
 
+        JButton btnAtras = new JButton("Atrás");
+        btnAtras.setBounds(50, 50, 100, 40);
+        btnAtras.addActionListener(e -> {
+            frame.dispose();
+            new MenuPrincipal(cedulaUsuario).mostrar();
+        });
+        cuadro_imagen.add(btnAtras);
         cuadro_imagen.add(metodoPagoCombo);
         cuadro_imagen.add(panelPagoMovil);
         cuadro_imagen.add(btnRecargar);
-        cuadro_imagen.add(btnCancelar);
+        
         cuadro_imagen.add(lblRecargar);
-        cuadro_imagen.add(lblCancelar);
+        
 
         pantalla.revalidate();
         pantalla.repaint();
@@ -339,7 +398,6 @@ public class Recarga_monedero {
 
     private void estiloTextField(JTextField field, boolean esReferencia) {
         field.setHorizontalAlignment(JTextField.CENTER);
-        // Set initial font to bold for referenciaField, and plain for others
         if (esReferencia) {
             field.setFont(new Font("Arial", Font.BOLD, 18));
         } else {
@@ -392,7 +450,7 @@ public class Recarga_monedero {
                     }
                 }
             });
-        } else if (field != fechaField) {
+        } else if (field != fechaField && field != montoRecargaField) { // Excluir montoRecargaField también
             field.setText("Banco");
             field.setForeground(Color.GRAY);
 
@@ -453,19 +511,86 @@ public class Recarga_monedero {
         };
     }
 
-    private void validarPago() {
+    private void validarPagoYRecargar() {
         if (!panelPagoMovil.isVisible()) {
             JOptionPane.showMessageDialog(frame, "Por favor seleccione el tipo de recarga", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+        String montoStr = montoRecargaField.getText().trim();
+        if (montoStr.isEmpty() || montoStr.equals("Monto de Recarga")) {
+            JOptionPane.showMessageDialog(frame, "Por favor ingrese el monto de recarga.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        double montoRecarga;
+        try {
+            montoRecarga = Double.parseDouble(montoStr);
+            if (montoRecarga <= 0) {
+                JOptionPane.showMessageDialog(frame, "El monto de recarga debe ser un número positivo.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(frame, "Monto de recarga inválido. Por favor ingrese un número.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         if (referenciaField.getText().isEmpty() || referenciaField.getText().equals("Número de referencia") ||
             bancoField.getText().isEmpty() || bancoField.getText().equals("Banco")) {
-            JOptionPane.showMessageDialog(frame, "Por favor complete todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(frame, "Pago validado exitosamente!\nReferencia: " + referenciaField.getText() +
-                "\nBanco: " + bancoField.getText() + "\nFecha: " + fechaField.getText(), "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "Por favor complete todos los campos de validación de pago.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        // Lógica para actualizar el saldo
+        try {
+            List<String> fileContent = new ArrayList<>();
+            boolean userFound = false;
+            try (BufferedReader reader = new BufferedReader(new FileReader(usuarios_file_path))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    if (parts.length == 4 && parts[0].trim().equals(cedulaUsuario)) {
+                        double currentSaldo = Double.parseDouble(parts[3].trim());
+                        double newSaldo = currentSaldo + montoRecarga;
+                        fileContent.add(parts[0] + "," + parts[1] + "," + parts[2] + "," + String.format("%.2f", newSaldo));
+                        userFound = true;
+                    } else {
+                        fileContent.add(line);
+                    }
+                }
+            }
+
+            if (userFound) {
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(usuarios_file_path))) {
+                    for (String line : fileContent) {
+                        writer.write(line);
+                        writer.newLine();
+                    }
+                }
+                JOptionPane.showMessageDialog(frame, "Recarga exitosa! Su nuevo saldo es: " + String.format("%.2f", getSaldoActual(cedulaUsuario)) + " Bs.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(frame, "Usuario no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (IOException | NumberFormatException e) {
+            JOptionPane.showMessageDialog(frame, "Error al procesar la recarga: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    private double getSaldoActual(String cedula) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(usuarios_file_path))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 4 && parts[0].trim().equals(cedula)) {
+                    return Double.parseDouble(parts[3].trim());
+                }
+            }
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return 0.0;
     }
 
     public void mostrar() {
@@ -473,6 +598,6 @@ public class Recarga_monedero {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Recarga_monedero().mostrar());
+        SwingUtilities.invokeLater(() -> new Recarga_monedero("12345678").mostrar());
     }
 }

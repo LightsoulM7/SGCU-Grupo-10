@@ -74,7 +74,7 @@ public class AdminMenu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame_admin_menu.dispose();
-                MenuSelectionScreen2 menuSelectionScreen = new MenuSelectionScreen2();
+                MenuSelectionScreen2 menuSelectionScreen = new MenuSelectionScreen2(inicio_de_sesion.cedulaUsuarioLogueado);
                 menuSelectionScreen.mostrar();
             }
         });

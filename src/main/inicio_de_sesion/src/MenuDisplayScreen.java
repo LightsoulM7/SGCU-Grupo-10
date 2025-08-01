@@ -11,12 +11,15 @@ public class MenuDisplayScreen {
     private JFrame frame_menu_display;
     private final String menu_file_path = "C:/Users/PC 1500/Desktop/SGCU-Grupo-10/src/main/db/menu_semanal.txt";
     private final String costos_variables_file_path = "C:/Users/PC 1500/Desktop/SGCU-Grupo-10/src/main/db/CostosVariables.txt";
+    private final String gastos_fijos_file_path = "../../db/gastos_fijos.txt";
+    private String cedulaUsuario;
 
-    public MenuDisplayScreen(String menuType, String previousScreen) {
-        initialize(menuType, previousScreen);
+    public MenuDisplayScreen(String menuType, String userType, String cedula) {
+        this.cedulaUsuario = cedula;
+        initialize(menuType, userType);
     }
 
-    private void initialize(String menuType, String previousScreen) {
+    private void initialize(String menuType, String userType) {
         frame_menu_display = new JFrame("Menú del Día");
         frame_menu_display.setSize(700, 866);
         frame_menu_display.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -35,9 +38,10 @@ public class MenuDisplayScreen {
             String foodName = menuDetails[0];
             String ingredients = menuDetails[1];
             double merma = Double.parseDouble(menuDetails[2]);
+            int estimacionConsumo = Integer.parseInt(menuDetails[3]);
             String description = menuDetails[4];
 
-            double price = calculatePrice(ingredients, merma);
+            double price = calculateCCB(ingredients, merma, estimacionConsumo, userType);
 
             JTextArea menuArea = new JTextArea();
             menuArea.setFont(new Font("Arial", Font.PLAIN, 18));
@@ -62,10 +66,10 @@ public class MenuDisplayScreen {
         btnBack.setBounds(50, 50, 100, 40);
         btnBack.addActionListener(e -> {
             frame_menu_display.dispose();
-            if ("user".equals(previousScreen)) {
-                new MenuSelectionScreen().mostrar();
+            if ("user".equals(userType)) {
+                new MenuSelectionScreen(cedulaUsuario).mostrar();
             } else {
-                new MenuSelectionScreen2().mostrar();
+                new MenuSelectionScreen2(cedulaUsuario).mostrar();
             }
         });
         fondo_label.add(btnBack);
@@ -88,7 +92,38 @@ public class MenuDisplayScreen {
         return null;
     }
 
-    private double calculatePrice(String ingredients, double merma) {
+    private double calculateCCB(String ingredients, double merma, int estimacionConsumo, String userType) {
+        double sumatoriaCostosFijos = getSumatoriaCostosFijos();
+        double sumatoriaIngredientes = getSumatoriaIngredientes(ingredients);
+
+        double ccb = (sumatoriaCostosFijos / 20 + sumatoriaIngredientes) / estimacionConsumo * (1 + merma);
+
+        if ("user".equals(userType)) {
+            return ccb * 0.20;
+        } else {
+            return ccb;
+        }
+    }
+
+    private double getSumatoriaCostosFijos() {
+        double sum = 0;
+        try (BufferedReader reader = new BufferedReader(new FileReader(gastos_fijos_file_path))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(":");
+                if (parts.length == 2) {
+                    sum += Double.parseDouble(parts[1]);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return sum;
+    }
+
+    private double getSumatoriaIngredientes(String ingredients) {
         Map<String, Double> ingredientPrices = getIngredientPrices();
         String[] ingredientList = ingredients.split(",");
         double totalPrice = 0;
@@ -97,7 +132,7 @@ public class MenuDisplayScreen {
             totalPrice += ingredientPrices.getOrDefault(ingredient.trim(), 0.0);
         }
 
-        return totalPrice * (1 + merma / 100);
+        return totalPrice;
     }
 
     private Map<String, Double> getIngredientPrices() {
@@ -120,7 +155,9 @@ public class MenuDisplayScreen {
                     prices.put(name, price);
                 }
             }
-        } catch (IOException | NumberFormatException e) {
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
             e.printStackTrace();
         }
         return prices;

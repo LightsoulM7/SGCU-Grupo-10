@@ -10,8 +10,10 @@ public class MenuSelectionScreen {
 
     private JFrame frame_menu_selection;
     private final String menu_file_path = "C:/Users/PC 1500/Desktop/SGCU-Grupo-10/src/main/db/menu_semanal.txt";
+    private String cedulaUsuario;
 
-    public MenuSelectionScreen() {
+    public MenuSelectionScreen(String cedula) {
+        this.cedulaUsuario = cedula;
         initialize();
     }
 
@@ -44,7 +46,7 @@ public class MenuSelectionScreen {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (isMenuAvailable("Desayuno")) {
-                    new MenuDisplayScreen("Desayuno", "user").mostrar();
+                    new MenuDisplayScreen("Desayuno", "user", cedulaUsuario).mostrar();
                     frame_menu_selection.dispose();
                 } else {
                     JOptionPane.showMessageDialog(frame_menu_selection, "No se encuentra disponible el menú de hoy.", "Menú no Disponible", JOptionPane.INFORMATION_MESSAGE);
@@ -67,7 +69,7 @@ public class MenuSelectionScreen {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (isMenuAvailable("Almuerzo")) {
-                    new MenuDisplayScreen("Almuerzo", "user").mostrar();
+                    new MenuDisplayScreen("Almuerzo", "user", cedulaUsuario).mostrar();
                     frame_menu_selection.dispose();
                 } else {
                     JOptionPane.showMessageDialog(frame_menu_selection, "No se encuentra disponible el menú de hoy.", "Menú no Disponible", JOptionPane.INFORMATION_MESSAGE);
@@ -81,8 +83,7 @@ public class MenuSelectionScreen {
         btnBack.setBounds(50, 50, 100, 40);
         btnBack.addActionListener(e -> {
             frame_menu_selection.dispose();
-            MenuPrincipal menuPrincipal = new MenuPrincipal();
-            menuPrincipal.mostrar();
+            new MenuPrincipal(cedulaUsuario).mostrar();
         });
         fondo_label.add(btnBack);
     }
@@ -106,6 +107,6 @@ public class MenuSelectionScreen {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new MenuSelectionScreen().mostrar());
+        SwingUtilities.invokeLater(() -> new MenuSelectionScreen("12345678").mostrar());
     }
 }

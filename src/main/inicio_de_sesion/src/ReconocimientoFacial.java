@@ -17,7 +17,7 @@ public class ReconocimientoFacial {
     private JFrame frame_reconocimiento;
     private JLabel uploaded_image_label;
     private BufferedImage uploaded_image;
-    private final String ESTADO_COMEDOR_FILE = "C:/Users/PC 1500/Desktop/SGCU-Grupo-10/src/main/db/estado_comedor.txt";
+    private final String ESTADO_COMEDOR_FILE = "../../db/estado_comedor.txt";
 
     public ReconocimientoFacial() {
         initialize();

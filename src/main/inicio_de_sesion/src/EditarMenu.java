@@ -24,7 +24,7 @@ public class EditarMenu {
     private DefaultListModel<String> list_model;
 
     private final String menu_file_path = "C:/Users/PC 1500/Desktop/SGCU-Grupo-10/src/main/db/menu_semanal.txt";
-    private final String costos_variables_file_path = "C:/Users/PC 1500/Desktop/SGCU-Grupo-10/src/main/db/CostosVariables.txt";
+    private final String costos_variables_file_path = "../../db/CostosVariables.txt";
     // Usamos un TreeMap para mantener los datos ordenados por clave (Día;Tipo)
     private Map<String, String> weekly_menu_data;
 

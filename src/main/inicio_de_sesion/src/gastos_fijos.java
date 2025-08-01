@@ -21,7 +21,7 @@ public class gastos_fijos {
     private JTextField id_empleado_field;
     private JButton guardar_gastos;
     private JLabel total_gastos_label;
-    private final String GASTOS_FILE = "C:/Users/PC 1500/Desktop/SGCU-Grupo-10/src/main/db/gastos_fijos.txt";
+    private final String GASTOS_FILE = "../../db/gastos_fijos.txt";
 
     public gastos_fijos() {
         initialize();

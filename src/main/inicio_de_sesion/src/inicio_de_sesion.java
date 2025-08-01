@@ -19,6 +19,7 @@ public class inicio_de_sesion {
     private JFrame frame_inicio_de_sesion;
     private Map<String, String> users = new HashMap<>(); // cedula -> hashed_password
     private Map<String, String> userRoles = new HashMap<>(); // cedula -> role (admin/usuario)
+    public static String cedulaUsuarioLogueado;
 
     public inicio_de_sesion() {
         loadUserData();
@@ -31,12 +32,11 @@ public class inicio_de_sesion {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 3) {
+                if (parts.length >= 3) { // Ahora debe haber al menos 3 partes
                     users.put(parts[0].trim(), parts[2].trim()); // cedula -> hashed_password
                 }
             }
         } catch (IOException e) {
-            // Archivo puede no existir si no hay usuarios registrados aún
             System.out.println("No se encontró usuarios.txt o está vacío.");
         }
     }
@@ -108,12 +108,11 @@ public class inicio_de_sesion {
         ingresar_cedula.setFont(new Font("Inter", Font.BOLD, 24));
         ingresar_cedula.setForeground(Color.GRAY);
 
-        // Aplicar DocumentFilter para permitir solo números en ingresar_cedula
         ((AbstractDocument) ingresar_cedula.getDocument()).setDocumentFilter(new DocumentFilter() {
             @Override
             public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
                 if (string == null) return;
-                if (string.matches("\\d*")) { // Solo permite dígitos
+                if (string.matches("\\d*")) { 
                     super.insertString(fb, offset, string, attr);
                 }
             }
@@ -124,7 +123,7 @@ public class inicio_de_sesion {
                     super.replace(fb, offset, length, text, attrs);
                     return;
                 }
-                if (text.matches("\\d*")) { // Solo permite dígitos
+                if (text.matches("\\d*")) { 
                     super.replace(fb, offset, length, text, attrs);
                 }
             }
@@ -257,6 +256,7 @@ boton_inicio_sesion.addActionListener(e -> {
         String hashedContrasena = hashContrasena(contrasena);
 
         if (users.containsKey(cedula) && users.get(cedula).equals(hashedContrasena)) {
+            cedulaUsuarioLogueado = cedula;
             String role = userRoles.get(cedula);
             if (role != null) {
                 frame_inicio_de_sesion.dispose();
@@ -264,7 +264,7 @@ boton_inicio_sesion.addActionListener(e -> {
                     AdminMenu adminMenu = new AdminMenu();
                     adminMenu.mostrar();
                 } else if (role.equals("usuario")) {
-                    MenuPrincipal menuPrincipal = new MenuPrincipal();
+                    MenuPrincipal menuPrincipal = new MenuPrincipal(cedulaUsuarioLogueado);
                     menuPrincipal.mostrar();
                 } else {
                     JOptionPane.showMessageDialog(frame_inicio_de_sesion, "Rol de usuario desconocido.", "Error de Inicio de Sesión", JOptionPane.ERROR_MESSAGE);
