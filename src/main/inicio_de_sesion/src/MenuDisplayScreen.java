@@ -9,8 +9,8 @@ import java.util.Map;
 public class MenuDisplayScreen {
 
     private JFrame frame_menu_display;
-    private final String menu_file_path = "C:/Users/PC 1500/Desktop/SGCU-Grupo-10/src/main/db/menu_semanal.txt";
-    private final String costos_variables_file_path = "C:/Users/PC 1500/Desktop/SGCU-Grupo-10/src/main/db/CostosVariables.txt";
+    private final String menu_file_path = "../../db/menu_semanal.txt";
+    private final String costos_variables_file_path = "../../db/CostosVariables.txt";
     private final String gastos_fijos_file_path = "../../db/gastos_fijos.txt";
     private String cedulaUsuario;
 

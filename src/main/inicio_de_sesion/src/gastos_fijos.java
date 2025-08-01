@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.BufferedWriter;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -287,25 +288,13 @@ public class gastos_fijos {
             return;
         }
 
-        // Read existing expenses (excluding the first line which is the total)
-        StringBuilder existingExpenses = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader(GASTOS_FILE))) {
-            String line = br.readLine(); // Skip the first line (total)
-            while ((line = br.readLine()) != null) {
-                existingExpenses.append(line).append("\n");
-            }
-        } catch (IOException e) {
-            System.err.println("Error al leer el archivo de gastos para guardar: " + e.getMessage());
-        }
-
-        // Append the new expense
-        existingExpenses.append(gastoEntry).append("\n");
-
-        // Write all expenses back to the file (calculateTotalGastos will handle the total)
-        try (FileWriter fw = new FileWriter(GASTOS_FILE, false)) { // Overwrite the file
-            fw.write(existingExpenses.toString());
+        System.out.println("Guardando gasto: " + gastoEntry);
+        try (BufferedWriter fw = new BufferedWriter(new FileWriter(GASTOS_FILE, true))) { // true para añadir al final
+            fw.write(gastoEntry);
+            fw.newLine();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(frame_gastos_fijos, "Error al guardar el gasto: " + e.getMessage(), "Error de Archivo", JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
         JOptionPane.showMessageDialog(frame_gastos_fijos, "Gasto Registrado Exitosamente.\n" + gastoEntry, "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
@@ -331,27 +320,22 @@ public class gastos_fijos {
     private void calculateTotalGastos() {
         double total = 0.0;
         StringBuilder expensesContent = new StringBuilder();
-        boolean firstLine = true;
+        boolean firstLineSkipped = false; // Flag to skip the first line
 
         try (BufferedReader br = new BufferedReader(new FileReader(GASTOS_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (firstLine) {
-                    // Try to parse the first line as total, if not, it's an expense
-                    try {
-                        total = Double.parseDouble(line);
-                        firstLine = false; // First line was indeed the total
-                        continue; // Skip to next line
-                    } catch (NumberFormatException e) {
-                        // If not a number, treat it as an expense and continue processing
-                        // This line will be added to expensesContent
-                    }
+                if (!firstLineSkipped) {
+                    firstLineSkipped = true; // Skip the first line (previous total)
+                    continue;
                 }
-                // Process as an expense
+                System.out.println("Línea de gasto leída: " + line);
                 try {
                     String[] parts = line.split(":");
                     if (parts.length == 2) {
-                        total += Double.parseDouble(parts[1]);
+                        double montoGasto = Double.parseDouble(parts[1]);
+                        total += montoGasto;
+                        System.out.println("Gasto procesado: " + parts[0] + ", Monto: " + montoGasto + ", Total acumulado: " + total);
                     }
                     expensesContent.append(line).append("\n");
                 } catch (NumberFormatException e) {
@@ -362,8 +346,9 @@ public class gastos_fijos {
             System.err.println("Error al leer el archivo de gastos para calcular el total: " + e.getMessage());
         }
 
-        // Now, rewrite the file with the new total on the first line
-        try (FileWriter fw = new FileWriter(GASTOS_FILE, false)) { // false to overwrite
+        System.out.println("Total final antes de reescribir: " + total);
+        // Ahora, reescribir el archivo con el nuevo total en la primera línea
+        try (BufferedWriter fw = new BufferedWriter(new FileWriter(GASTOS_FILE, false))) { // false para sobrescribir
             fw.write(String.format("%.2f\n", total));
             fw.write(expensesContent.toString());
         } catch (IOException e) {

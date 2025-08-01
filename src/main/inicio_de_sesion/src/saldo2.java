@@ -52,6 +52,6 @@ public class saldo2 {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new saldo().mostrar());
+        SwingUtilities.invokeLater(() -> new saldo("00000000").mostrar());
     }
 }

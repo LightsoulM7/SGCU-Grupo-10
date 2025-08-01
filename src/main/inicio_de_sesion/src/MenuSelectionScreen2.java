@@ -9,7 +9,7 @@ import java.io.IOException;
 public class MenuSelectionScreen2 {
 
     private JFrame frame_menu_selection;
-    private final String menu_file_path = "C:/Users/PC 1500/Desktop/SGCU-Grupo-10/src/main/db/menu_semanal.txt";
+    private final String menu_file_path = "../../db/menu_semanal.txt";
     private String cedulaUsuario;
 
     public MenuSelectionScreen2(String cedula) {

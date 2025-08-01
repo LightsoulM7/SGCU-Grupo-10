@@ -9,8 +9,11 @@ import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.BufferedWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReconocimientoFacial {
 
@@ -18,6 +21,11 @@ public class ReconocimientoFacial {
     private JLabel uploaded_image_label;
     private BufferedImage uploaded_image;
     private final String ESTADO_COMEDOR_FILE = "../../db/estado_comedor.txt";
+    private final String USUARIOS_FILE = "../../db/usuarios.txt";
+    private final String CEDULAS_COMUNIDAD_FILE = "../../db/cedulasComunidad.txt";
+    private final String MENU_FILE = "../../db/menu_semanal.txt";
+    private final String COSTOS_VARIABLES_FILE = "../../db/CostosVariables.txt";
+    private final String GASTOS_FIJOS_FILE = "../../db/gastos_fijos.txt";
 
     public ReconocimientoFacial() {
         initialize();
@@ -113,12 +121,31 @@ public class ReconocimientoFacial {
 
             if (matchFound && cedulaReconocida != null) {
                 Map<String, String> estadoComedor = readEstadoComedor();
+                String userRole = getUserRole(cedulaReconocida);
+
                 if (estadoComedor.containsKey(cedulaReconocida) && estadoComedor.get(cedulaReconocida).equals("entered")) {
                     JOptionPane.showMessageDialog(frame_reconocimiento, "La persona con cédula " + cedulaReconocida + " ya ha entrado al comedor.", "Acceso Denegado", JOptionPane.WARNING_MESSAGE);
                 } else {
-                    estadoComedor.put(cedulaReconocida, "entered");
-                    writeEstadoComedor(estadoComedor);
-                    JOptionPane.showMessageDialog(frame_reconocimiento, "Acceso concedido para la cédula: " + cedulaReconocida, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    String[] menuDetails = getMenuDetails("Almuerzo"); // Asumimos "Almuerzo" como la comida
+                    if (menuDetails != null) {
+                        String ingredients = menuDetails[1];
+                        double merma = Double.parseDouble(menuDetails[2]);
+                        int estimacionConsumo = Integer.parseInt(menuDetails[3]);
+
+                        double mealCost = calculateCCB(ingredients, merma, estimacionConsumo, userRole);
+                        double currentBalance = getSaldoActual(cedulaReconocida);
+
+                        if (currentBalance >= mealCost) {
+                            updateSaldo(cedulaReconocida, currentBalance - mealCost);
+                            estadoComedor.put(cedulaReconocida, "entered");
+                            writeEstadoComedor(estadoComedor);
+                            JOptionPane.showMessageDialog(frame_reconocimiento, "Acceso concedido para la cédula: " + cedulaReconocida + ". Costo de la comida: " + String.format("%.2f", mealCost) + " Bs. Saldo restante: " + String.format("%.2f", getSaldoActual(cedulaReconocida)) + " Bs.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(frame_reconocimiento, "Saldo insuficiente para la cédula: " + cedulaReconocida + ". Costo de la comida: " + String.format("%.2f", mealCost) + " Bs. Saldo actual: " + String.format("%.2f", currentBalance) + " Bs.", "Saldo Insuficiente", JOptionPane.WARNING_MESSAGE);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(frame_reconocimiento, "Menú de almuerzo no disponible para calcular el costo.", "Error de Menú", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             } else {
                 JOptionPane.showMessageDialog(frame_reconocimiento, "Acceso denegado.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -182,6 +209,150 @@ public class ReconocimientoFacial {
         } catch (IOException e) {
             System.err.println("Error al escribir en el archivo de estado del comedor: " + e.getMessage());
         }
+    }
+
+    private String getUserRole(String cedula) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(CEDULAS_COMUNIDAD_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 2 && parts[0].trim().equals(cedula)) {
+                    return parts[1].trim();
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error al leer el archivo de roles de la comunidad: " + e.getMessage());
+        }
+        return null;
+    }
+
+    private double getSaldoActual(String cedula) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(USUARIOS_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 4 && parts[0].trim().equals(cedula)) {
+                    return Double.parseDouble(parts[3].trim());
+                }
+            }
+        } catch (IOException | NumberFormatException e) {
+            System.err.println("Error al leer el saldo del usuario: " + e.getMessage());
+        }
+        return 0.0;
+    }
+
+    private void updateSaldo(String cedula, double newSaldo) {
+        List<String> fileContent = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(USUARIOS_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 4 && parts[0].trim().equals(cedula)) {
+                    fileContent.add(parts[0] + "," + parts[1] + "," + parts[2] + "," + String.format("%.2f", newSaldo));
+                } else {
+                    fileContent.add(line);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error al leer el archivo de usuarios para actualizar el saldo: " + e.getMessage());
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(USUARIOS_FILE))) {
+            for (String line : fileContent) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Error al escribir en el archivo de usuarios para actualizar el saldo: " + e.getMessage());
+        }
+    }
+
+    private String[] getMenuDetails(String menuType) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(MENU_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(";");
+                if (parts.length > 0 && parts[0].equalsIgnoreCase(menuType)) {
+                    return new String[]{parts[1], parts[2], parts[3], parts[4], parts[5]};
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private double calculateCCB(String ingredients, double merma, double estimacionConsumo, String userType) {
+        double sumatoriaCostosFijos = getSumatoriaCostosFijos();
+        double sumatoriaIngredientes = getSumatoriaIngredientes(ingredients);
+
+        double ccb = (sumatoriaCostosFijos / 20 + sumatoriaIngredientes) / estimacionConsumo * (1 + merma);
+
+        if ("usuario".equals(userType)) {
+            return ccb * 0.20;
+        } else if ("admin".equals(userType)) {
+            return ccb;
+        } else {
+            return ccb; // Default para otros roles o si no se especifica
+        }
+    }
+
+    private double getSumatoriaCostosFijos() {
+        double sum = 0;
+        try (BufferedReader reader = new BufferedReader(new FileReader(GASTOS_FIJOS_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(":");
+                if (parts.length == 2) {
+                    sum += Double.parseDouble(parts[1]);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return sum;
+    }
+
+    private double getSumatoriaIngredientes(String ingredients) {
+        Map<String, Double> ingredientPrices = getIngredientPrices();
+        String[] ingredientList = ingredients.split(",");
+        double totalPrice = 0;
+
+        for (String ingredient : ingredientList) {
+            totalPrice += ingredientPrices.getOrDefault(ingredient.trim(), 0.0);
+        }
+
+        return totalPrice;
+    }
+
+    private Map<String, Double> getIngredientPrices() {
+        Map<String, Double> prices = new HashMap<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(COSTOS_VARIABLES_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                String name = "";
+                double price = 0;
+                for (String part : parts) {
+                    if (part.trim().startsWith("Nombre:")) {
+                        name = part.replace("Nombre:", "").trim();
+                    }
+                    if (part.trim().startsWith("Precio:")) {
+                        price = Double.parseDouble(part.replace("Precio:", "").trim());
+                    }
+                }
+                if (!name.isEmpty()) {
+                    prices.put(name, price);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return prices;
     }
 
     public static void main(String[] args) {
