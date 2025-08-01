@@ -29,9 +29,16 @@ public class MenuSelectionScreen {
         panel.add(fondo_label);
 
         // Botón Desayuno/Cena
-        JButton btnDesayunoCena = new JButton("Desayuno");
-        btnDesayunoCena.setBounds(200, 300, 300, 80);
-        btnDesayunoCena.setFont(new Font("Arial", Font.BOLD, 24));
+        JButton btnDesayunoCena = new JButton();
+        btnDesayunoCena.setBounds(250, 300, 209, 72);
+        btnDesayunoCena.setOpaque(false);
+        btnDesayunoCena.setContentAreaFilled(false);
+        btnDesayunoCena.setFocusPainted(false);
+ImageIcon imagen_boton_desayuno=new ImageIcon("../../Imagenes/Desayuno.png");
+Image desayuno=imagen_boton_desayuno.getImage().getScaledInstance(209, 72,Image.SCALE_SMOOTH);
+JLabel label_boton_desayuno=new JLabel(new ImageIcon(desayuno));
+
+label_boton_desayuno.setBounds(250,300,209,72);
         btnDesayunoCena.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -42,11 +49,19 @@ public class MenuSelectionScreen {
             }
         });
         fondo_label.add(btnDesayunoCena);
+        fondo_label.add(label_boton_desayuno);
 
         // Botón Almuerzo
-        JButton btnAlmuerzo = new JButton("Almuerzo");
-        btnAlmuerzo.setBounds(200, 450, 300, 80);
-        btnAlmuerzo.setFont(new Font("Arial", Font.BOLD, 24));
+        JButton btnAlmuerzo = new JButton();
+        btnAlmuerzo.setBounds(250, 450, 209, 72);
+         btnAlmuerzo.setOpaque(false);
+        btnAlmuerzo.setContentAreaFilled(false);
+        btnAlmuerzo.setFocusPainted(false);
+ImageIcon imagen_boton_almuerzo=new ImageIcon("../../Imagenes/Almuerzo.png");
+Image almuerzo=imagen_boton_almuerzo.getImage().getScaledInstance(209, 72,Image.SCALE_SMOOTH);
+
+JLabel label_boton_almuerzo=new JLabel(new ImageIcon(almuerzo));
+label_boton_almuerzo.setBounds(250,450,209,72);
         btnAlmuerzo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -57,6 +72,7 @@ public class MenuSelectionScreen {
             }
         });
         fondo_label.add(btnAlmuerzo);
+        fondo_label.add(label_boton_almuerzo);
 
         // Botón de retroceso (opcional, pero útil)
         JButton btnBack = new JButton("Atrás");
