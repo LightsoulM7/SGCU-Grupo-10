@@ -401,7 +401,7 @@ public class Recarga_monedero {
                 public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
                         throws BadLocationException {
                     if (string == null) return;
-                    if (string.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]*")) {
+                    if (string.matches("[a-zA-ZáéíóúÉÓÚñÑ\\s]*")) {
                         super.insertString(fb, offset, string, attr);
                     }
                 }
@@ -413,7 +413,7 @@ public class Recarga_monedero {
                         super.replace(fb, offset, length, text, attrs);
                         return;
                     }
-                    if (text.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]*")) {
+                    if (text.matches("[a-zA-ZáéíóúÉÓÚñÑ\\s]*")) {
                         super.replace(fb, offset, length, text, attrs);
                     }
                 }

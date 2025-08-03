@@ -23,34 +23,66 @@ public class MenuPrincipal {
         frame_menu_principal.add(panel);
 
         // Fondo de la pantalla
-        ImageIcon fondo = new ImageIcon("src/main/Imagenes/cuadro_azul_ucv.png"); // Ajusta la ruta si es necesario
+        ImageIcon fondo = new ImageIcon("../../Imagenes/cuadro_azul_ucv.png"); // Ruta relativa ajustada
         JLabel fondo_label = new JLabel(fondo);
         fondo_label.setBounds(0, 0, 700, 866);
         panel.add(fondo_label);
 
+        // Botón Cerrar Sesión (arriba a la izquierda)
+        JButton btnCerrarSesion = new JButton("Cerrar Sesión");
+        btnCerrarSesion.setBounds(50, 50, 150, 40); // Posición y tamaño ajustados
+        btnCerrarSesion.setFont(new Font("Arial", Font.BOLD, 16));
+        btnCerrarSesion.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame_menu_principal.dispose(); // Cierra la ventana actual
+                inicio_de_sesion loginScreen = new inicio_de_sesion();
+                loginScreen.mostrar(); // Muestra la pantalla de inicio de sesión
+            }
+        });
+        fondo_label.add(btnCerrarSesion);
+
         // Botón Consultar Saldo
         JButton btnConsultarSaldo = new JButton("Consultar Saldo");
-        btnConsultarSaldo.setBounds(200, 300, 300, 80);
+        btnConsultarSaldo.setBounds(200, 250, 300, 80);
         btnConsultarSaldo.setFont(new Font("Arial", Font.BOLD, 24));
         btnConsultarSaldo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(frame_menu_principal, "Funcionalidad de Consultar Saldo");
+                frame_menu_principal.dispose(); // Cierra la ventana actual
+                saldo saldoScreen = new saldo();
+                saldoScreen.mostrar(); // Muestra la pantalla de saldo
             }
         });
         fondo_label.add(btnConsultarSaldo);
 
         // Botón Consultar Menú
         JButton btnConsultarMenu = new JButton("Consultar Menú");
-        btnConsultarMenu.setBounds(200, 450, 300, 80);
+        btnConsultarMenu.setBounds(200, 375, 300, 80);
         btnConsultarMenu.setFont(new Font("Arial", Font.BOLD, 24));
         btnConsultarMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(frame_menu_principal, "Funcionalidad de Consultar Menú");
+                frame_menu_principal.dispose(); // Cierra la ventana actual
+                MenuSelectionScreen menuSelectionScreen = new MenuSelectionScreen();
+                menuSelectionScreen.mostrar(); // Muestra la nueva ventana de selección de menú
             }
         });
         fondo_label.add(btnConsultarMenu);
+
+        // Botón Recargar Monedero
+        JButton btnRecargarMonedero = new JButton("Recargar Monedero");
+        btnRecargarMonedero.setBounds(200, 500, 300, 80);
+        btnRecargarMonedero.setFont(new Font("Arial", Font.BOLD, 24));
+        btnRecargarMonedero.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame_menu_principal.dispose();
+                Recarga_monedero recarga = new Recarga_monedero();
+                recarga.mostrar();
+            }
+        });
+        fondo_label.add(btnRecargarMonedero);
     }
 
     public void mostrar() {

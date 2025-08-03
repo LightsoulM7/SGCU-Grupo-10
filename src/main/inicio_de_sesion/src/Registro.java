@@ -1,17 +1,55 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.text.AbstractDocument; // Importación necesaria
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter; // Importación necesaria
+import javax.swing.text.DocumentFilter;
 
 public class Registro {
 
     private JFrame frame_inicio_de_sesion;
+    private Set<String> cedulasComunidad = new HashSet<>();
+    private Set<String> cedulasRegistradas = new HashSet<>();
 
     public Registro() {
+        cargarCedulas();
         initialize();
+    }
+
+    private void cargarCedulas() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("../../db/cedulasComunidad.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                cedulasComunidad.add(line.trim());
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error al cargar las cédulas de la comunidad.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader("../../db/usuarios.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length > 0) {
+                    cedulasRegistradas.add(parts[0].trim());
+                }
+            }
+        } catch (IOException e) {
+            // El archivo puede no existir al principio, no es un error crítico.
+        }
     }
 
     private void initialize() {
@@ -56,14 +94,13 @@ public class Registro {
         ingresar_cedula.setBounds(110, 220, 480, 66);
         ingresar_cedula.setHorizontalAlignment(JTextField.CENTER);
         ingresar_cedula.setFont(new Font("Inter", Font.BOLD, 24));
-        ingresar_cedula.setForeground(Color.GRAY); // Cambiado a GRAY para el placeholder
+        ingresar_cedula.setForeground(Color.GRAY);
 
-        // Aplicar DocumentFilter para permitir solo números en ingresar_cedula
         ((AbstractDocument) ingresar_cedula.getDocument()).setDocumentFilter(new DocumentFilter() {
             @Override
             public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
                 if (string == null) return;
-                if (string.matches("\\d*")) { // Solo permite dígitos
+                if (string.matches("\\d*")) {
                     super.insertString(fb, offset, string, attr);
                 }
             }
@@ -74,177 +111,78 @@ public class Registro {
                     super.replace(fb, offset, length, text, attrs);
                     return;
                 }
-                if (text.matches("\\d*")) { // Solo permite dígitos
+                if (text.matches("\\d*")) {
                     super.replace(fb, offset, length, text, attrs);
                 }
             }
         });
 
-
         JTextField ingresar_correo = new JTextField("INGRESE SU CORREO ELECTRONICO");
         ingresar_correo.setBounds(110, 290, 480, 66);
         ingresar_correo.setHorizontalAlignment(JTextField.CENTER);
         ingresar_correo.setFont(new Font("Inter", Font.BOLD, 24));
-        ingresar_correo.setForeground(Color.GRAY); // Cambiado a GRAY para el placeholder
+        ingresar_correo.setForeground(Color.GRAY);
 
-        JTextField ingresar_contrasena = new JTextField("INGRESE SU CONTRASEÑA");
+        JPasswordField ingresar_contrasena = new JPasswordField("INGRESE SU CONTRASEÑA");
         ingresar_contrasena.setBounds(110, 360, 480, 66);
         ingresar_contrasena.setHorizontalAlignment(JTextField.CENTER);
         ingresar_contrasena.setFont(new Font("Inter", Font.BOLD, 24));
-        ingresar_contrasena.setForeground(Color.GRAY); // Cambiado a GRAY para el placeholder
+        ingresar_contrasena.setForeground(Color.GRAY);
+        ingresar_contrasena.setEchoChar((char) 0);
 
-        JTextField confirmar_contrasena = new JTextField("CONFIRMAR CONTRASEÑA");
+
+        JPasswordField confirmar_contrasena = new JPasswordField("CONFIRMAR CONTRASEÑA");
         confirmar_contrasena.setBounds(110, 430, 480, 66);
         confirmar_contrasena.setHorizontalAlignment(JTextField.CENTER);
         confirmar_contrasena.setFont(new Font("Inter", Font.BOLD, 24));
-        confirmar_contrasena.setForeground(Color.GRAY); // Cambiado a GRAY para el placeholder
+        confirmar_contrasena.setForeground(Color.GRAY);
+        confirmar_contrasena.setEchoChar((char) 0);
 
-
-        ingresar_cedula.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (ingresar_cedula.getText().equals("INGRESE SU CEDULA")) {
-                    ingresar_cedula.setText("");
-                    ingresar_cedula.setForeground(Color.BLACK);
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (ingresar_cedula.getText().isEmpty()) {
-                    ingresar_cedula.setText("INGRESE SU CEDULA");
-                    ingresar_cedula.setForeground(Color.GRAY); // Vuelve al color gris para el placeholder
-                    ingresar_cedula.setFont(new Font("Inter", Font.BOLD, 24));
-                }
-            }
-        });
-
-
-        ingresar_correo.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (ingresar_correo.getText().equals("INGRESE SU CORREO ELECTRONICO")) {
-                    ingresar_correo.setText("");
-                    ingresar_correo.setForeground(Color.BLACK);
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (ingresar_correo.getText().isEmpty()) {
-                    ingresar_correo.setText("INGRESE SU CORREO ELECTRONICO");
-                    ingresar_correo.setForeground(Color.GRAY); // Vuelve al color gris para el placeholder
-                    ingresar_correo.setFont(new Font("Inter", Font.BOLD, 24));
-                }
-            }
-        });
-
-        ingresar_contrasena.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (ingresar_contrasena.getText().equals("INGRESE SU CONTRASEÑA")) {
-                    ingresar_contrasena.setText("");
-                    ingresar_contrasena.setForeground(Color.BLACK);
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (ingresar_contrasena.getText().isEmpty()) {
-                    ingresar_contrasena.setText("INGRESE SU CONTRASEÑA");
-                    ingresar_contrasena.setForeground(Color.GRAY); // Vuelve al color gris para el placeholder
-                    ingresar_contrasena.setFont(new Font("Inter", Font.BOLD, 24));
-                }
-            }
-        });
-
-        confirmar_contrasena.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (confirmar_contrasena.getText().equals("CONFIRMAR CONTRASEÑA")) {
-                    confirmar_contrasena.setText("");
-                    confirmar_contrasena.setForeground(Color.BLACK);
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (confirmar_contrasena.getText().isEmpty()) {
-                    confirmar_contrasena.setText("CONFIRMAR CONTRASEÑA");
-                    confirmar_contrasena.setForeground(Color.GRAY); // Vuelve al color gris para el placeholder
-                    confirmar_contrasena.setFont(new Font("Inter", Font.BOLD, 24));
-                }
-            }
-        });
-
+        addPlaceholder(ingresar_cedula, "INGRESE SU CEDULA");
+        addPlaceholder(ingresar_correo, "INGRESE SU CORREO ELECTRONICO");
+        addPasswordPlaceholder(ingresar_contrasena, "INGRESE SU CONTRASEÑA");
+        addPasswordPlaceholder(confirmar_contrasena, "CONFIRMAR CONTRASEÑA");
 
         pantalla.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // Si el clic no fue en un campo de texto, quita el foco de los campos
                 if (e.getSource() == pantalla) {
-                    if (ingresar_cedula.isFocusOwner()) {
-                        ingresar_cedula.transferFocusBackward();
-                    }
-                    if (ingresar_correo.isFocusOwner()) {
-                        ingresar_correo.transferFocusBackward();
-                    }
-                    if (ingresar_contrasena.isFocusOwner()) {
-                        ingresar_contrasena.transferFocusBackward();
-                    }
-                    if (confirmar_contrasena.isFocusOwner()) {
-                        confirmar_contrasena.transferFocusBackward();
-                    }
                     pantalla.requestFocusInWindow();
                 }
             }
         });
 
-
         pantalla.setFocusable(true);
-
 
         cuadro_imagen.add(ingresar_cedula);
         cuadro_imagen.add(ingresar_contrasena);
         cuadro_imagen.add(ingresar_correo);
         cuadro_imagen.add(confirmar_contrasena);
 
-
         pantalla.revalidate();
         pantalla.repaint();
-
 
         ingresar_cedula.setPreferredSize(new Dimension(480, 66));
         ingresar_cedula.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 
         label_boton_registrarse.setBounds(250, 520, 163, 76);
 
-
         cuadro_imagen.add(boton_registrarse);
         cuadro_imagen.add(label_boton_registrarse);
-        // cuadro_imagen.add(ingresar_cedula); // Esto podría ser redundante si ya se añadió arriba
 
         boton_registrarse.addActionListener(e -> {
-            // Validaciones antes de mostrar el mensaje de registro
             String cedula = ingresar_cedula.getText();
             String correo = ingresar_correo.getText();
-            String contrasena = ingresar_contrasena.getText();
-            String confirmarContrasena = confirmar_contrasena.getText();
+            String contrasena = new String(ingresar_contrasena.getPassword());
+            String confirmarContrasena = new String(confirmar_contrasena.getPassword());
 
-            if (cedula.equals("INGRESE SU CEDULA") || cedula.isEmpty() ||
-                correo.equals("INGRESE SU CORREO ELECTRONICO") || correo.isEmpty() ||
-                contrasena.equals("INGRESE SU CONTRASEÑA") || contrasena.isEmpty() ||
-                confirmarContrasena.equals("CONFIRMAR CONTRASEÑA") || confirmarContrasena.isEmpty()) {
-                JOptionPane.showMessageDialog(frame_inicio_de_sesion, "Por favor, complete todos los campos para registrarse.", "Error de Registro", JOptionPane.WARNING_MESSAGE);
-            } else if (!contrasena.equals(confirmarContrasena)) {
-                JOptionPane.showMessageDialog(frame_inicio_de_sesion, "Las contraseñas no coinciden. Por favor, inténtelo de nuevo.", "Error de Contraseña", JOptionPane.ERROR_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(frame_inicio_de_sesion, "Registro Exitoso", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                // Aquí podrías agregar lógica para guardar los datos en una base de datos
-                // O volver a la pantalla de inicio de sesión
-                frame_inicio_de_sesion.dispose();
-                inicio_de_sesion login = new inicio_de_sesion();
-                login.mostrar();
+            if (validarCampos(cedula, correo, contrasena, confirmarContrasena)) {
+                if (registrarUsuario(cedula, correo, contrasena)) {
+                    JOptionPane.showMessageDialog(frame_inicio_de_sesion, "Registro Exitoso", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    frame_inicio_de_sesion.dispose();
+                    inicio_de_sesion login = new inicio_de_sesion();
+                    login.mostrar();
+                }
             }
         });
 
@@ -257,6 +195,126 @@ public class Registro {
                 label_boton_registrarse.setIcon(new ImageIcon(imagen_boton_registrarse.getImage().getScaledInstance(163, 76, Image.SCALE_SMOOTH)));
             }
         });
+    }
+
+    private void addPlaceholder(JTextField textField, String placeholder) {
+        textField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (textField.getText().equals(placeholder)) {
+                    textField.setText("");
+                    textField.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (textField.getText().isEmpty()) {
+                    textField.setText(placeholder);
+                    textField.setForeground(Color.GRAY);
+                }
+            }
+        });
+    }
+
+    private void addPasswordPlaceholder(JPasswordField passwordField, String placeholder) {
+        passwordField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (new String(passwordField.getPassword()).equals(placeholder)) {
+                    passwordField.setText("");
+                    passwordField.setEchoChar('*');
+                    passwordField.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (new String(passwordField.getPassword()).isEmpty()) {
+                    passwordField.setText(placeholder);
+                    passwordField.setEchoChar((char) 0);
+                    passwordField.setForeground(Color.GRAY);
+                }
+            }
+        });
+    }
+
+    private boolean validarCampos(String cedula, String correo, String contrasena, String confirmarContrasena) {
+        if (cedula.equals("INGRESE SU CEDULA") || correo.equals("INGRESE SU CORREO ELECTRONICO") ||
+            contrasena.equals("INGRESE SU CONTRASEÑA") || confirmarContrasena.equals("CONFIRMAR CONTRASEÑA")) {
+            JOptionPane.showMessageDialog(frame_inicio_de_sesion, "Por favor, complete todos los campos.", "Error de Registro", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        if (!cedulasComunidad.contains(cedula)) {
+            JOptionPane.showMessageDialog(frame_inicio_de_sesion, "La cédula no está autorizada para registrarse.", "Error de Registro", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (cedulasRegistradas.contains(cedula)) {
+            JOptionPane.showMessageDialog(frame_inicio_de_sesion, "La cédula ya se encuentra registrada.", "Error de Registro", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (!validarCorreo(correo)) {
+            JOptionPane.showMessageDialog(frame_inicio_de_sesion, "El formato del correo electrónico no es válido.", "Error de Registro", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (!validarContrasena(contrasena)) {
+            JOptionPane.showMessageDialog(frame_inicio_de_sesion, "La contraseña no es segura. Debe tener al menos 8 caracteres, un número y un carácter especial.", "Error de Contraseña", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (!contrasena.equals(confirmarContrasena)) {
+            JOptionPane.showMessageDialog(frame_inicio_de_sesion, "Las contraseñas no coinciden.", "Error de Contraseña", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validarCorreo(String correo) {
+        String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(correo);
+        return matcher.matches();
+    }
+
+    private boolean validarContrasena(String contrasena) {
+        String regex = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(contrasena);
+        return matcher.matches();
+    }
+
+    private boolean registrarUsuario(String cedula, String correo, String contrasena) {
+        try {
+            String contrasenaHasheada = hashContrasena(contrasena);
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("../../db/usuarios.txt", true))) {
+                writer.write(cedula + "," + correo + "," + contrasenaHasheada);
+                writer.newLine();
+                cedulasRegistradas.add(cedula);
+                return true;
+            }
+        } catch (IOException | NoSuchAlgorithmException e) {
+            JOptionPane.showMessageDialog(frame_inicio_de_sesion, "Error al guardar el usuario.", "Error de Registro", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+
+    private String hashContrasena(String contrasena) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(contrasena.getBytes(StandardCharsets.UTF_8));
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hash) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 
     public void mostrar() {
