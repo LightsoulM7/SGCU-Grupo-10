@@ -39,23 +39,32 @@ pantalla.add(cuadro_imagen);
 
 JButton boton_inicio_sesion=new JButton();
 JButton boton_olvido_clave=new JButton();
+JButton boton_registrarse = new JButton();
 
-boton_inicio_sesion.setBounds(100,500,163,76);
+boton_inicio_sesion.setBounds(50,500,163,76);
 boton_inicio_sesion.setOpaque(false);
 boton_inicio_sesion.setContentAreaFilled(false);
 boton_inicio_sesion.setFocusPainted(false);
 
-boton_olvido_clave.setBounds(430,500,163,76);
+boton_olvido_clave.setBounds(450,500,163,76);
 boton_olvido_clave.setOpaque(false);
 boton_olvido_clave.setContentAreaFilled(false);
 boton_olvido_clave.setFocusPainted(false);
 
+boton_registrarse.setBounds(250,500,163,76);
+boton_registrarse.setOpaque(false);
+boton_registrarse.setContentAreaFilled(false);
+boton_registrarse.setFocusPainted(false);
+
 ImageIcon imagen_boton_inicio_sesion=new ImageIcon("../../Imagenes/iniciar_sesion.png");
 ImageIcon imagen_boton_olvido_clave=new ImageIcon("../../Imagenes/olvido_clave.png");
+ImageIcon imagen_boton_registrarse=new ImageIcon("../../Imagenes/Registrarse.png");
 Image cuadrar_imagen_boton_inicio_sesion=imagen_boton_inicio_sesion.getImage().getScaledInstance(163, 76,Image.SCALE_SMOOTH);
 Image cuadrar_imagen_boton_olvido_clave=imagen_boton_olvido_clave.getImage().getScaledInstance(163, 76,Image.SCALE_SMOOTH);
+Image cuadrar_imagen_boton_registrarse=imagen_boton_registrarse.getImage().getScaledInstance(163, 76,Image.SCALE_SMOOTH);
 JLabel label_boton=new JLabel(new ImageIcon(cuadrar_imagen_boton_inicio_sesion));
 JLabel label_boton_olvido_clave=new JLabel(new ImageIcon(cuadrar_imagen_boton_olvido_clave));
+JLabel label_boton_registrarse=new JLabel(new ImageIcon(cuadrar_imagen_boton_registrarse));
 
 JTextField ingresar_cedula=new JTextField("INGRESE SU CEDULA");
 ingresar_cedula.setBounds(110,300,480,66);
@@ -164,14 +173,17 @@ cuadro_imagen.add(ingresar_contrasena);
 ingresar_cedula.setPreferredSize(new Dimension(480,66));
 ingresar_cedula.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 
-label_boton.setBounds(100,500,163,76);
-label_boton_olvido_clave.setBounds(430,500,163,76);
+label_boton.setBounds(50,500,163,76);
+label_boton_olvido_clave.setBounds(450,500,163,76);
+label_boton_registrarse.setBounds(250,500,163,76);
 
 
 cuadro_imagen.add(boton_inicio_sesion);
       cuadro_imagen.add(label_boton);
       cuadro_imagen.add(boton_olvido_clave);
 cuadro_imagen.add(label_boton_olvido_clave);
+cuadro_imagen.add(boton_registrarse);
+cuadro_imagen.add(label_boton_registrarse);
 cuadro_imagen.add(ingresar_cedula);
 
 boton_inicio_sesion.addActionListener(e -> {
@@ -195,6 +207,12 @@ boton_olvido_clave.addActionListener(e -> {
     frame_inicio_de_sesion.dispose(); // Cierra la ventana actual
     recuperar_contrasena recuperarContrasena = new recuperar_contrasena();
     recuperarContrasena.mostrar(); // Muestra la ventana de recuperación de contraseña
+});
+
+boton_registrarse.addActionListener(e -> {
+    frame_inicio_de_sesion.dispose();
+    Registro registro = new Registro();
+    registro.mostrar();
 });
 
 boton_inicio_sesion.addMouseListener(new java.awt.event.MouseAdapter() {

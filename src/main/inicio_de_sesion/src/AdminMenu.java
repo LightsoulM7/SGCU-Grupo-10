@@ -28,9 +28,17 @@ public class AdminMenu {
         fondo_label.setBounds(0, 0, 700, 866);
         panel.add(fondo_label);
 
+        // --- TITULO ---
+        JLabel lblTitulo = new JLabel("Menú de Administrador");
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 36));
+        lblTitulo.setForeground(Color.WHITE);
+        lblTitulo.setBounds(150, 100, 400, 50);
+        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        fondo_label.add(lblTitulo);
+
         // Botón Gestión de Costos Variables
         JButton btnCostosVariables = new JButton("Gestión de Costos Variables");
-        btnCostosVariables.setBounds(150, 300, 400, 80);
+        btnCostosVariables.setBounds(150, 180, 400, 80);
         btnCostosVariables.setFont(new Font("Arial", Font.BOLD, 24));
         btnCostosVariables.addActionListener(new ActionListener() {
             @Override
@@ -45,7 +53,7 @@ public class AdminMenu {
 
         // Botón Gestión de Costos Fijos
         JButton btnCostosFijos = new JButton("Gestión de Costos Fijos");
-        btnCostosFijos.setBounds(150, 450, 400, 80);
+        btnCostosFijos.setBounds(150, 290, 400, 80);
         btnCostosFijos.setFont(new Font("Arial", Font.BOLD, 24));
         btnCostosFijos.addActionListener(new ActionListener() {
             @Override
@@ -57,6 +65,62 @@ public class AdminMenu {
             }
         });
         fondo_label.add(btnCostosFijos);
+
+        // Botón Consultar Menú
+        JButton btnConsultarMenu = new JButton("Consultar Menú");
+        btnConsultarMenu.setBounds(150, 400, 400, 80);
+        btnConsultarMenu.setFont(new Font("Arial", Font.BOLD, 24));
+        btnConsultarMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame_admin_menu.dispose();
+                MenuSelectionScreen2 menuSelectionScreen = new MenuSelectionScreen2();
+                menuSelectionScreen.mostrar();
+            }
+        });
+        fondo_label.add(btnConsultarMenu);
+
+        // Botón Datos de Consumo
+        JButton btnDatosConsumo = new JButton("Datos de Consumo");
+        btnDatosConsumo.setBounds(150, 510, 400, 80);
+        btnDatosConsumo.setFont(new Font("Arial", Font.BOLD, 24));
+        btnDatosConsumo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame_admin_menu.dispose();
+                DatosConsumo datosConsumo = new DatosConsumo();
+                datosConsumo.mostrar();
+            }
+        });
+        fondo_label.add(btnDatosConsumo);
+
+        // Botón Reconocimiento
+        JButton btnReconocimiento = new JButton("Reconocimiento");
+        btnReconocimiento.setBounds(150, 620, 400, 80);
+        btnReconocimiento.setFont(new Font("Arial", Font.BOLD, 24));
+        btnReconocimiento.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame_admin_menu.dispose();
+                ReconocimientoFacial reconocimiento = new ReconocimientoFacial();
+                reconocimiento.mostrar();
+            }
+        });
+        fondo_label.add(btnReconocimiento);
+
+        // Botón Gestion de menu
+        JButton btnGestionMenu = new JButton("Gestion de menu");
+        btnGestionMenu.setBounds(150, 730, 400, 80);
+        btnGestionMenu.setFont(new Font("Arial", Font.BOLD, 24));
+        btnGestionMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame_admin_menu.dispose();
+                EditarMenu editarMenu = new EditarMenu();
+                editarMenu.mostrar();
+            }
+        });
+        fondo_label.add(btnGestionMenu);
 
         // Botón de retroceso (opcional, pero útil)
         JButton btnBack = new JButton("Cerrar Sesión");

@@ -38,24 +38,16 @@ cuadro_desayuno.setBounds(130,150,465,517);
 pantalla.add(cuadro_imagen);
 
 cuadro_imagen.add(cuadro_desayuno);
-JButton boton_cancelar=new JButton();
 
+JButton btnAtras = new JButton("Atrás");
+btnAtras.setBounds(50, 50, 100, 40);
+cuadro_imagen.add(btnAtras);
 
-boton_cancelar.setBounds(580,5,93,34);
-boton_cancelar.setOpaque(false);
-boton_cancelar.setContentAreaFilled(false);
-boton_cancelar.setFocusPainted(false);
-
-
-
-
-
-
-ImageIcon imagen_boton_cancelar=new ImageIcon("../../Imagenes/cancelar.png");
-
-Image cuadrar_imagen_boton_cancelar=imagen_boton_cancelar.getImage().getScaledInstance(93, 34,Image.SCALE_SMOOTH);
-
-JLabel label_boton_cancelar=new JLabel(new ImageIcon(cuadrar_imagen_boton_cancelar));
+btnAtras.addActionListener(e -> {
+    menu.dispose();
+    MenuSelectionScreen menuSelectionScreen = new MenuSelectionScreen();
+    menuSelectionScreen.mostrar();
+});
 
 
 
@@ -69,22 +61,6 @@ JLabel label_boton_cancelar=new JLabel(new ImageIcon(cuadrar_imagen_boton_cancel
 
    pantalla.revalidate();
         pantalla.repaint();
-
-
-
-
-
-label_boton_cancelar.setBounds(580,5,93,34);
-
-cuadro_imagen.add(boton_cancelar);
-cuadro_imagen.add(label_boton_cancelar);
-
-
-boton_cancelar.addActionListener(e -> {
-    menu.dispose();
-    MenuSelectionScreen menuSelectionScreen = new MenuSelectionScreen();
-    menuSelectionScreen.mostrar();
-});
 
     }
 

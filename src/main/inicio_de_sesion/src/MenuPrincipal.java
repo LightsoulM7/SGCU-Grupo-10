@@ -44,7 +44,7 @@ public class MenuPrincipal {
 
         // Botón Consultar Saldo
         JButton btnConsultarSaldo = new JButton("Consultar Saldo");
-        btnConsultarSaldo.setBounds(200, 300, 300, 80);
+        btnConsultarSaldo.setBounds(200, 250, 300, 80);
         btnConsultarSaldo.setFont(new Font("Arial", Font.BOLD, 24));
         btnConsultarSaldo.addActionListener(new ActionListener() {
             @Override
@@ -58,7 +58,7 @@ public class MenuPrincipal {
 
         // Botón Consultar Menú
         JButton btnConsultarMenu = new JButton("Consultar Menú");
-        btnConsultarMenu.setBounds(200, 450, 300, 80);
+        btnConsultarMenu.setBounds(200, 375, 300, 80);
         btnConsultarMenu.setFont(new Font("Arial", Font.BOLD, 24));
         btnConsultarMenu.addActionListener(new ActionListener() {
             @Override
@@ -69,6 +69,20 @@ public class MenuPrincipal {
             }
         });
         fondo_label.add(btnConsultarMenu);
+
+        // Botón Recargar Monedero
+        JButton btnRecargarMonedero = new JButton("Recargar Monedero");
+        btnRecargarMonedero.setBounds(200, 500, 300, 80);
+        btnRecargarMonedero.setFont(new Font("Arial", Font.BOLD, 24));
+        btnRecargarMonedero.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame_menu_principal.dispose();
+                Recarga_monedero recarga = new Recarga_monedero();
+                recarga.mostrar();
+            }
+        });
+        fondo_label.add(btnRecargarMonedero);
     }
 
     public void mostrar() {
