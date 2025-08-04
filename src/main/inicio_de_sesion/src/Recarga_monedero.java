@@ -5,20 +5,23 @@ import java.awt.event.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class Recarga_monedero {
-    
+
     private JFrame frame;
     private JComboBox<String> metodoPagoCombo;
     private JPanel panelPagoMovil;
     private JTextField referenciaField, bancoField, fechaField;
     private final Calendar maxDate = Calendar.getInstance();
-    
+    private final Calendar minDate = Calendar.getInstance();
+
     public Recarga_monedero() {
-        maxDate.set(2025, Calendar.AUGUST, 31);
+        maxDate.set(2030, Calendar.AUGUST, 31);
+        minDate.set(2000, Calendar.JANUARY, 1);
         initialize();
     }
-    
+
     private void initialize() {
         frame = new JFrame();
         frame.setTitle("Recarga de Monedero");
@@ -26,61 +29,61 @@ public class Recarga_monedero {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
-        
+
         JPanel pantalla = new JPanel(new BorderLayout());
         frame.add(pantalla);
-        
+
         ImageIcon fondoIcon = new ImageIcon("../../Imagenes/cuadro_ucv.png");
         Image imagenFondo = fondoIcon.getImage().getScaledInstance(700, 866, Image.SCALE_SMOOTH);
         JLabel cuadro_imagen = new JLabel(new ImageIcon(imagenFondo));
         cuadro_imagen.setBounds(0, 0, 700, 866);
         pantalla.add(cuadro_imagen);
-        
+
         String[] metodosPago = {"Seleccione el tipo de recarga", "Pago Móvil"};
         metodoPagoCombo = new JComboBox<>(metodosPago);
         metodoPagoCombo.setBounds(150, 100, 400, 50);
         metodoPagoCombo.setFont(new Font("Arial", Font.BOLD, 20));
         metodoPagoCombo.setBackground(Color.WHITE);
-        
+
         panelPagoMovil = new JPanel();
         panelPagoMovil.setBounds(100, 180, 500, 350);
         panelPagoMovil.setLayout(new GridLayout(7, 1, 10, 10));
         panelPagoMovil.setOpaque(false);
         panelPagoMovil.setVisible(false);
-        
+
         JLabel lblDatos = new JLabel("Datos del Beneficiario:", SwingConstants.CENTER);
         lblDatos.setFont(new Font("Arial", Font.BOLD, 20));
         lblDatos.setForeground(Color.WHITE);
-        
+
         JLabel lblCedula = new JLabel("Cédula: 17.888.999", SwingConstants.CENTER);
         lblCedula.setFont(new Font("Arial", Font.PLAIN, 18));
         lblCedula.setForeground(Color.WHITE);
-        
+
         JLabel lblNumero = new JLabel("Teléfono: 0412-556-6789", SwingConstants.CENTER);
         lblNumero.setFont(new Font("Arial", Font.PLAIN, 18));
         lblNumero.setForeground(Color.WHITE);
-        
+
         JLabel lblBanco = new JLabel("Banco: Venezuela", SwingConstants.CENTER);
         lblBanco.setFont(new Font("Arial", Font.PLAIN, 18));
         lblBanco.setForeground(Color.WHITE);
-        
+
         JLabel lblValidacion = new JLabel("Validar Pago:", SwingConstants.CENTER);
         lblValidacion.setFont(new Font("Arial", Font.BOLD, 20));
         lblValidacion.setForeground(Color.WHITE);
-        
+
         referenciaField = new JTextField("Número de referencia");
         estiloTextField(referenciaField, true);
-        
+
         bancoField = new JTextField("Banco");
         estiloTextField(bancoField, false);
-        
+
         JPanel fechaPanel = new JPanel(new BorderLayout());
         fechaPanel.setOpaque(false);
-        
+
         fechaField = new JTextField(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
         estiloTextField(fechaField, false);
         fechaField.setEditable(false);
-        
+
         JButton btnCalendario = new JButton("▼");
         btnCalendario.setFont(new Font("Arial", Font.BOLD, 16));
         btnCalendario.setPreferredSize(new Dimension(50, 30));
@@ -90,10 +93,10 @@ public class Recarga_monedero {
         btnCalendario.setBorder(BorderFactory.createRaisedBevelBorder());
         btnCalendario.setFocusPainted(false);
         btnCalendario.addActionListener(e -> mostrarCalendario());
-        
+
         fechaPanel.add(fechaField, BorderLayout.CENTER);
         fechaPanel.add(btnCalendario, BorderLayout.EAST);
-        
+
         panelPagoMovil.add(lblDatos);
         panelPagoMovil.add(lblCedula);
         panelPagoMovil.add(lblNumero);
@@ -102,62 +105,71 @@ public class Recarga_monedero {
         panelPagoMovil.add(referenciaField);
         panelPagoMovil.add(bancoField);
         panelPagoMovil.add(fechaPanel);
-        
+
         metodoPagoCombo.addActionListener(e -> {
-            if(metodoPagoCombo.getSelectedItem().equals("Pago Móvil")) {
+            if (metodoPagoCombo.getSelectedItem().equals("Pago Móvil")) {
                 panelPagoMovil.setVisible(true);
+                if (referenciaField.getText().isEmpty()) {
+                    referenciaField.setText("Número de referencia");
+                    referenciaField.setForeground(Color.GRAY);
+                    referenciaField.setFont(new Font("Arial", Font.BOLD, 18)); // Ensure font is bold when placeholder is set
+                }
+                if (bancoField.getText().isEmpty()) {
+                    bancoField.setText("Banco");
+                    bancoField.setForeground(Color.GRAY);
+                }
             } else {
                 panelPagoMovil.setVisible(false);
             }
         });
-        
+
         JButton btnRecargar = new JButton();
-        btnRecargar.setBounds(200, 400, 262, 76);
+        btnRecargar.setBounds(200, 600, 262, 76);
         btnRecargar.setOpaque(false);
         btnRecargar.setContentAreaFilled(false);
         btnRecargar.setBorderPainted(false);
-        
+
         JButton btnCancelar = new JButton();
         btnCancelar.setBounds(580, 5, 93, 34);
         btnCancelar.setOpaque(false);
         btnCancelar.setContentAreaFilled(false);
         btnCancelar.setBorderPainted(false);
-        
+
         ImageIcon iconRecargar = new ImageIcon("../../Imagenes/recarga_completa.png");
         ImageIcon iconCancelar = new ImageIcon("../../Imagenes/cancelar.png");
-        
+
         Image imgRecargar = iconRecargar.getImage().getScaledInstance(262, 76, Image.SCALE_SMOOTH);
         Image imgCancelar = iconCancelar.getImage().getScaledInstance(93, 34, Image.SCALE_SMOOTH);
-        
+
         JLabel lblRecargar = new JLabel(new ImageIcon(imgRecargar));
-        lblRecargar.setBounds(200, 400, 262, 76);
-        
+        lblRecargar.setBounds(200, 600, 262, 76);
+
         JLabel lblCancelar = new JLabel(new ImageIcon(imgCancelar));
         lblCancelar.setBounds(580, 5, 93, 34);
-        
+
         btnRecargar.addActionListener(e -> validarPago());
         btnCancelar.addActionListener(e -> frame.dispose());
-        
+
         btnRecargar.addMouseListener(crearHoverEffect(lblRecargar, iconRecargar, 262, 76));
         btnCancelar.addMouseListener(crearHoverEffect(lblCancelar, iconCancelar, 93, 34));
-        
+
         cuadro_imagen.add(metodoPagoCombo);
         cuadro_imagen.add(panelPagoMovil);
         cuadro_imagen.add(btnRecargar);
         cuadro_imagen.add(btnCancelar);
         cuadro_imagen.add(lblRecargar);
         cuadro_imagen.add(lblCancelar);
-        
+
         pantalla.revalidate();
         pantalla.repaint();
     }
-    
+
     private void mostrarCalendario() {
-        JDialog dialog = new JDialog(frame, "Seleccionar Fecha (Hasta agosto 2025)", true);
+        JDialog dialog = new JDialog(frame, "Seleccionar Fecha", true);
         dialog.setSize(350, 330);
         dialog.setLocationRelativeTo(frame);
         dialog.getContentPane().setBackground(Color.WHITE);
-        
+
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -212,48 +224,54 @@ public class Recarga_monedero {
 
         JPanel daysPanel = new JPanel(new GridLayout(0, 7, 5, 5));
         daysPanel.setBackground(Color.WHITE);
-        
-        Calendar cal = Calendar.getInstance();
-        updateCalendar(cal, monthLabel, daysPanel, prevMonth, nextMonth);
-        
+
+        final Calendar mutableCal = Calendar.getInstance();
+        try {
+            Date currentFieldDate = new SimpleDateFormat("dd/MM/yyyy").parse(fechaField.getText());
+            mutableCal.setTime(currentFieldDate);
+        } catch (Exception e) {
+            mutableCal.setTime(Calendar.getInstance().getTime());
+        }
+
+        updateCalendar(mutableCal, monthLabel, daysPanel, prevMonth, nextMonth, dialog);
+
         prevMonth.addActionListener(e -> {
-            cal.add(Calendar.MONTH, -1);
-            updateCalendar(cal, monthLabel, daysPanel, prevMonth, nextMonth);
+            mutableCal.add(Calendar.MONTH, -1);
+            updateCalendar(mutableCal, monthLabel, daysPanel, prevMonth, nextMonth, dialog);
         });
-        
+
         nextMonth.addActionListener(e -> {
-            cal.add(Calendar.MONTH, 1);
-            updateCalendar(cal, monthLabel, daysPanel, prevMonth, nextMonth);
+            mutableCal.add(Calendar.MONTH, 1);
+            updateCalendar(mutableCal, monthLabel, daysPanel, prevMonth, nextMonth, dialog);
         });
-        
+
         panel.add(monthPanel, BorderLayout.NORTH);
         panel.add(daysPanel, BorderLayout.CENTER);
-        
+
         dialog.add(panel);
         dialog.setVisible(true);
     }
-    
-    private void updateCalendar(Calendar cal, JLabel monthLabel, JPanel daysPanel, JButton prevMonth, JButton nextMonth) {
-        daysPanel.removeAll();
-        
-        SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM yyyy");
-        monthLabel.setText(monthFormat.format(cal.getTime()));
-        
-        Calendar nextMonthCal = (Calendar) cal.clone();
-        nextMonthCal.add(Calendar.MONTH, 1);
-        nextMonthCal.set(Calendar.DAY_OF_MONTH, 1);
 
-        prevMonth.setEnabled(!(cal.get(Calendar.YEAR) == 2020 && cal.get(Calendar.MONTH) == Calendar.JANUARY));
-        nextMonth.setEnabled(nextMonthCal.get(Calendar.YEAR) < maxDate.get(Calendar.YEAR) || 
-                           (nextMonthCal.get(Calendar.YEAR) == maxDate.get(Calendar.YEAR) && 
-                            nextMonthCal.get(Calendar.MONTH) <= maxDate.get(Calendar.MONTH)));
-        
+    private void updateCalendar(Calendar cal, JLabel monthLabel, JPanel daysPanel, JButton prevMonth, JButton nextMonth, JDialog dialog) {
+        daysPanel.removeAll();
+
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM yyyy", new Locale("es", "ES"));
+        monthLabel.setText(monthFormat.format(cal.getTime()));
+
+        Calendar tempCalForPrev = (Calendar) cal.clone();
+        tempCalForPrev.set(Calendar.DAY_OF_MONTH, 1);
+        prevMonth.setEnabled(tempCalForPrev.after(minDate));
+
+        Calendar tempCalForNext = (Calendar) cal.clone();
+        tempCalForNext.set(Calendar.DAY_OF_MONTH, tempCalForNext.getActualMaximum(Calendar.DAY_OF_MONTH));
+        nextMonth.setEnabled(tempCalForNext.before(maxDate));
+
         Calendar tempCal = (Calendar) cal.clone();
         tempCal.set(Calendar.DAY_OF_MONTH, 1);
-        
+
         int firstDayOfWeek = tempCal.get(Calendar.DAY_OF_WEEK);
         int daysInMonth = tempCal.getActualMaximum(Calendar.DAY_OF_MONTH);
-        
+
         String[] weekDays = {"Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"};
         for (String day : weekDays) {
             JLabel label = new JLabel(day, SwingConstants.CENTER);
@@ -261,11 +279,11 @@ public class Recarga_monedero {
             label.setForeground(new Color(70, 130, 180));
             daysPanel.add(label);
         }
-        
+
         for (int i = 1; i < firstDayOfWeek; i++) {
             daysPanel.add(new JLabel(""));
         }
-        
+
         Calendar today = Calendar.getInstance();
         Calendar selectedDate = Calendar.getInstance();
         try {
@@ -273,69 +291,90 @@ public class Recarga_monedero {
         } catch (Exception e) {
             selectedDate = today;
         }
-        
+
         for (int i = 1; i <= daysInMonth; i++) {
             JButton dayButton = new JButton(String.valueOf(i));
             dayButton.setFont(new Font("Arial", Font.PLAIN, 14));
             dayButton.setBackground(Color.WHITE);
             dayButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            
-            if (cal.get(Calendar.YEAR) == today.get(Calendar.YEAR) && 
-                cal.get(Calendar.MONTH) == today.get(Calendar.MONTH) && 
-                i == today.get(Calendar.DAY_OF_MONTH)) {
+
+            Calendar currentDayInLoop = (Calendar) cal.clone();
+            currentDayInLoop.set(Calendar.DAY_OF_MONTH, i);
+            currentDayInLoop.set(Calendar.HOUR_OF_DAY, 0);
+            currentDayInLoop.set(Calendar.MINUTE, 0);
+            currentDayInLoop.set(Calendar.SECOND, 0);
+            currentDayInLoop.set(Calendar.MILLISECOND, 0);
+
+            if (currentDayInLoop.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+                currentDayInLoop.get(Calendar.MONTH) == today.get(Calendar.MONTH) &&
+                currentDayInLoop.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH)) {
                 dayButton.setBackground(new Color(220, 240, 255));
             }
-            
-            if (cal.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR) && 
-                cal.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH) && 
-                i == selectedDate.get(Calendar.DAY_OF_MONTH)) {
+
+            if (currentDayInLoop.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR) &&
+                currentDayInLoop.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH) &&
+                currentDayInLoop.get(Calendar.DAY_OF_MONTH) == selectedDate.get(Calendar.DAY_OF_MONTH)) {
                 dayButton.setBackground(new Color(180, 220, 255));
                 dayButton.setBorder(BorderFactory.createLineBorder(new Color(70, 130, 180), 2));
             }
             
+            if (currentDayInLoop.after(maxDate) || currentDayInLoop.before(minDate)) {
+                 dayButton.setEnabled(false);
+                 dayButton.setForeground(Color.LIGHT_GRAY);
+            }
+
             final int day = i;
             dayButton.addActionListener(e -> {
-                tempCal.set(Calendar.DAY_OF_MONTH, day);
-                fechaField.setText(new SimpleDateFormat("dd/MM/yyyy").format(tempCal.getTime()));
-                ((Window) SwingUtilities.getRoot(dayButton)).dispose();
+                Calendar selectedCal = (Calendar) cal.clone();
+                selectedCal.set(Calendar.DAY_OF_MONTH, day);
+                fechaField.setText(new SimpleDateFormat("dd/MM/yyyy").format(selectedCal.getTime()));
+                dialog.dispose();
             });
             daysPanel.add(dayButton);
-            tempCal.add(Calendar.DAY_OF_MONTH, 1);
         }
-        
+
         daysPanel.revalidate();
         daysPanel.repaint();
     }
-    
+
     private void estiloTextField(JTextField field, boolean esReferencia) {
         field.setHorizontalAlignment(JTextField.CENTER);
-        field.setFont(new Font("Arial", Font.BOLD, 18));
+        // Set initial font to bold for referenciaField, and plain for others
+        if (esReferencia) {
+            field.setFont(new Font("Arial", Font.BOLD, 18));
+        } else {
+            field.setFont(new Font("Arial", Font.PLAIN, 18));
+        }
         field.setBackground(new Color(255, 255, 255, 200));
         field.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
-        
-        if(esReferencia) {
+
+        if (esReferencia) {
             field.setText("Número de referencia");
             field.setForeground(Color.GRAY);
-            
-            // Filtro para solo números
+
             ((PlainDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
                 @Override
-                public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) 
-                    throws BadLocationException {
+                public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+                        throws BadLocationException {
+                    if (string == null) return;
                     if (string.matches("\\d*")) {
                         super.insertString(fb, offset, string, attr);
                     }
                 }
 
                 @Override
-                public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) 
-                    throws BadLocationException {
+                public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+                        throws BadLocationException {
+                    if (text == null) {
+                        super.replace(fb, offset, length, text, attrs);
+                        return;
+                    }
                     if (text.matches("\\d*")) {
                         super.replace(fb, offset, length, text, attrs);
                     }
                 }
             });
-            
+
             field.addFocusListener(new FocusAdapter() {
                 @Override
                 public void focusGained(FocusEvent e) {
@@ -344,7 +383,7 @@ public class Recarga_monedero {
                         field.setForeground(Color.BLACK);
                     }
                 }
-                
+
                 @Override
                 public void focusLost(FocusEvent e) {
                     if (field.getText().isEmpty()) {
@@ -356,26 +395,30 @@ public class Recarga_monedero {
         } else if (field != fechaField) {
             field.setText("Banco");
             field.setForeground(Color.GRAY);
-            
-            // Filtro para solo letras (incluyendo espacios y acentos)
+
             ((PlainDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
                 @Override
-                public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) 
-                    throws BadLocationException {
-                    if (string.matches("[a-zA-ZáéíóúÉÓÚñÑ\\s]*")) {
+                public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+                        throws BadLocationException {
+                    if (string == null) return;
+                    if (string.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]*")) {
                         super.insertString(fb, offset, string, attr);
                     }
                 }
 
                 @Override
-                public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) 
-                    throws BadLocationException {
-                    if (text.matches("[a-zA-ZáéíóúÉÓÚñÑ\\s]*")) {
+                public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+                        throws BadLocationException {
+                    if (text == null) {
+                        super.replace(fb, offset, length, text, attrs);
+                        return;
+                    }
+                    if (text.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]*")) {
                         super.replace(fb, offset, length, text, attrs);
                     }
                 }
             });
-            
+
             field.addFocusListener(new FocusAdapter() {
                 @Override
                 public void focusGained(FocusEvent e) {
@@ -384,7 +427,7 @@ public class Recarga_monedero {
                         field.setForeground(Color.BLACK);
                     }
                 }
-                
+
                 @Override
                 public void focusLost(FocusEvent e) {
                     if (field.getText().isEmpty()) {
@@ -395,40 +438,40 @@ public class Recarga_monedero {
             });
         }
     }
-    
+
     private MouseAdapter crearHoverEffect(JLabel label, ImageIcon icon, int ancho, int alto) {
         return new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 label.setIcon(new ImageIcon(icon.getImage().getScaledInstance(ancho + 10, alto + 5, Image.SCALE_SMOOTH)));
             }
-            
+
             @Override
             public void mouseExited(MouseEvent e) {
                 label.setIcon(new ImageIcon(icon.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH)));
             }
         };
     }
-    
+
     private void validarPago() {
-        if(!panelPagoMovil.isVisible()) {
+        if (!panelPagoMovil.isVisible()) {
             JOptionPane.showMessageDialog(frame, "Por favor seleccione el tipo de recarga", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         if (referenciaField.getText().isEmpty() || referenciaField.getText().equals("Número de referencia") ||
             bancoField.getText().isEmpty() || bancoField.getText().equals("Banco")) {
             JOptionPane.showMessageDialog(frame, "Por favor complete todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(frame, "Pago validado exitosamente!\nReferencia: " + referenciaField.getText() + 
+            JOptionPane.showMessageDialog(frame, "Pago validado exitosamente!\nReferencia: " + referenciaField.getText() +
                 "\nBanco: " + bancoField.getText() + "\nFecha: " + fechaField.getText(), "Éxito", JOptionPane.INFORMATION_MESSAGE);
         }
     }
-    
+
     public void mostrar() {
         frame.setVisible(true);
     }
-    
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Recarga_monedero().mostrar());
     }
