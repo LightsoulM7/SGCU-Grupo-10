@@ -551,7 +551,7 @@ public class Recarga_monedero {
         try {
             List<String> fileContent = new ArrayList<>();
             boolean userFound = false;
-            double newSaldo = 0.0; // Declare newSaldo here
+            double newSaldo = 0.0;
             try (BufferedReader reader = new BufferedReader(new FileReader(usuarios_file_path))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -559,7 +559,11 @@ public class Recarga_monedero {
                     if (parts.length == 4 && parts[0].trim().equals(cedulaUsuario)) {
                         double currentSaldo = Double.parseDouble(parts[3].trim());
                         newSaldo = currentSaldo + montoRecarga;
-                        fileContent.add(parts[0] + "," + parts[1] + "," + parts[2] + "," + String.format("%.2f", newSaldo));
+                        
+                        // Formatea el saldo para que siempre use un punto como separador decimal
+                        String newSaldoFormatted = String.format(Locale.ENGLISH, "%.2f", newSaldo);
+
+                        fileContent.add(parts[0] + "," + parts[1] + "," + parts[2] + "," + newSaldoFormatted);
                         userFound = true;
                     } else {
                         fileContent.add(line);

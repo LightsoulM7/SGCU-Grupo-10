@@ -30,12 +30,12 @@ public class AdminMenu {
         JLabel lblTitulo = new JLabel("Menú de Administrador");
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 36));
         lblTitulo.setForeground(Color.WHITE);
-        lblTitulo.setBounds(150, 50, 400, 50); // Moved up
+        lblTitulo.setBounds(200, 50, 400, 50); // Moved up
         lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
         fondo_label.add(lblTitulo);
 
         JButton btnGestionInsumos = new JButton("Gestión de Insumos");
-        btnGestionInsumos.setBounds(200, 150, 300, 80);
+        btnGestionInsumos.setBounds(200, 110, 300, 80);
         btnGestionInsumos.setFont(new Font("Arial", Font.BOLD, 24));
         btnGestionInsumos.setBackground(new Color(70, 130, 180));
         btnGestionInsumos.setForeground(Color.WHITE);
@@ -46,7 +46,7 @@ public class AdminMenu {
         fondo_label.add(btnGestionInsumos);
 
         JButton btnGestionGastosFijos = new JButton("Gestión de Gastos Fijos");
-        btnGestionGastosFijos.setBounds(200, 240, 300, 80);
+        btnGestionGastosFijos.setBounds(200, 200, 300, 80);
         btnGestionGastosFijos.setFont(new Font("Arial", Font.BOLD, 24));
         btnGestionGastosFijos.setBackground(new Color(70, 130, 180));
         btnGestionGastosFijos.setForeground(Color.WHITE);
@@ -57,7 +57,7 @@ public class AdminMenu {
         fondo_label.add(btnGestionGastosFijos);
 
         JButton btnEditarMenu = new JButton("Editar Menú Semanal");
-        btnEditarMenu.setBounds(200, 330, 300, 80);
+        btnEditarMenu.setBounds(200, 290, 300, 80);
         btnEditarMenu.setFont(new Font("Arial", Font.BOLD, 24));
         btnEditarMenu.setBackground(new Color(70, 130, 180));
         btnEditarMenu.setForeground(Color.WHITE);
@@ -68,7 +68,7 @@ public class AdminMenu {
         fondo_label.add(btnEditarMenu);
 
         JButton btnReconocimientoFacial = new JButton("Reconocimiento Facial");
-        btnReconocimientoFacial.setBounds(200, 420, 300, 80);
+        btnReconocimientoFacial.setBounds(200, 380, 300, 80);
         btnReconocimientoFacial.setFont(new Font("Arial", Font.BOLD, 24));
         btnReconocimientoFacial.setBackground(new Color(70, 130, 180));
         btnReconocimientoFacial.setForeground(Color.WHITE);
@@ -79,7 +79,7 @@ public class AdminMenu {
         fondo_label.add(btnReconocimientoFacial);
 
         JButton btnConsultarMenuAdmin = new JButton("Consultar Menú (Admin)");
-        btnConsultarMenuAdmin.setBounds(200, 510, 300, 80);
+        btnConsultarMenuAdmin.setBounds(200, 470, 300, 80);
         btnConsultarMenuAdmin.setFont(new Font("Arial", Font.BOLD, 24));
         btnConsultarMenuAdmin.setBackground(new Color(70, 130, 180));
         btnConsultarMenuAdmin.setForeground(Color.WHITE);
@@ -90,7 +90,7 @@ public class AdminMenu {
         fondo_label.add(btnConsultarMenuAdmin);
 
         JButton btnRecargarMonedero = new JButton("Recargar Monedero");
-        btnRecargarMonedero.setBounds(200, 600, 300, 80);
+        btnRecargarMonedero.setBounds(200, 560, 300, 80);
         btnRecargarMonedero.setFont(new Font("Arial", Font.BOLD, 24));
         btnRecargarMonedero.setBackground(new Color(70, 130, 180));
         btnRecargarMonedero.setForeground(Color.WHITE);
@@ -101,7 +101,7 @@ public class AdminMenu {
         fondo_label.add(btnRecargarMonedero);
 
         JButton btnConsultarSaldo = new JButton("Consultar Saldo");
-        btnConsultarSaldo.setBounds(200, 690, 300, 80);
+        btnConsultarSaldo.setBounds(200, 650, 300, 80);
         btnConsultarSaldo.setFont(new Font("Arial", Font.BOLD, 24));
         btnConsultarSaldo.setBackground(new Color(70, 130, 180));
         btnConsultarSaldo.setForeground(Color.WHITE);
@@ -112,7 +112,7 @@ public class AdminMenu {
         fondo_label.add(btnConsultarSaldo);
 
         JButton btnSalir = new JButton("Salir");
-        btnSalir.setBounds(200, 780, 300, 80);
+        btnSalir.setBounds(200, 740, 300, 80);
         btnSalir.setFont(new Font("Arial", Font.BOLD, 24));
         btnSalir.setBackground(new Color(200, 50, 50));
         btnSalir.setForeground(Color.WHITE);

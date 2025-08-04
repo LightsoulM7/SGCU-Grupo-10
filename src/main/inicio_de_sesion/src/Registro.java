@@ -17,6 +17,7 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
+import java.util.Locale;
 
 public class Registro {
 
@@ -295,7 +296,8 @@ public class Registro {
         try {
             String contrasenaHasheada = hashContrasena(contrasena);
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("../../db/usuarios.txt", true))) {
-                writer.write(cedula + "," + correo + "," + contrasenaHasheada);
+                // Se agrega el saldo inicial de 0.00 al final de la línea
+                writer.write(cedula + "," + correo + "," + contrasenaHasheada + ",0.00");
                 writer.newLine();
                 cedulasRegistradas.add(cedula);
                 return true;
