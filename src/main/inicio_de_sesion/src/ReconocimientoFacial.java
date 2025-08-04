@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ReconocimientoFacial {
 
@@ -257,7 +258,7 @@ public class ReconocimientoFacial {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length == 4 && parts[0].trim().equals(cedula)) {
-                    fileContent.add(parts[0] + "," + parts[1] + "," + parts[2] + "," + String.format("%.2f", newSaldo));
+   fileContent.add(parts[0] + "," + parts[1] + "," + parts[2] + "," + String.format(Locale.US, "%.2f", newSaldo));
                 } else {
                     fileContent.add(line);
                 }
