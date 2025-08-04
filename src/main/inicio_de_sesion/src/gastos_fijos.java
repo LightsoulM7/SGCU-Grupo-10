@@ -1,6 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 
 public class gastos_fijos {
 
@@ -11,6 +15,7 @@ public class gastos_fijos {
     private JTextField monto_periodo_field;
     private JTextField sueldo_mensual_field;
     private JTextField id_empleado_field;
+    private JButton guardar_gastos;
 
     public gastos_fijos() {
         initialize();
@@ -31,13 +36,11 @@ public class gastos_fijos {
         JLabel cuadro_imagen = new JLabel(fondo);
         cuadro_imagen.setBounds(0, 0, 700, 866);
 
-        // --- COMBOBOX PRINCIPAL ---
         String tipo_gasto[] = {"Seleccione tipo de gasto", "Servicio", "Sueldo de Empleado"};
         tipo_gasto_combo = new JComboBox<>(tipo_gasto);
         tipo_gasto_combo.setBounds(128, 220, 450, 50);
         tipo_gasto_combo.setFont(new Font("Arial", Font.BOLD, 20));
 
-        // --- COMPONENTES PARA SERVICIOS ---
         String tipo_servicio[] = {"Tipo de Servicio", "Agua", "Gas", "Luz"};
         servicios_combo = new JComboBox<>(tipo_servicio);
         servicios_combo.setBounds(128, 280, 450, 50);
@@ -46,7 +49,27 @@ public class gastos_fijos {
         monto_periodo_field = createPlaceholderTextField("Monto del periodo");
         monto_periodo_field.setBounds(128, 340, 450, 50);
 
-        // --- COMPONENTES PARA EMPLEADOS ---
+        ((AbstractDocument) monto_periodo_field.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                if (string == null) return;
+                if (string.matches("\\d*")) {
+                    super.insertString(fb, offset, string, attr);
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                if (text == null) {
+                    super.replace(fb, offset, length, text, attrs);
+                    return;
+                }
+                if (text.matches("\\d*")) {
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+        });
+
         String tipo_de_empleado[] = {"Tipo de Empleado", "Personal de Cocina", "Administrador", "Personal de Limpieza"};
         empleados_combo = new JComboBox<>(tipo_de_empleado);
         empleados_combo.setBounds(128, 280, 450, 50);
@@ -54,56 +77,113 @@ public class gastos_fijos {
 
         sueldo_mensual_field = createPlaceholderTextField("Sueldo Mensual");
         sueldo_mensual_field.setBounds(128, 340, 450, 50);
+        ((AbstractDocument) sueldo_mensual_field.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                if (string == null) return;
+                String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
+                String newText = currentText.substring(0, offset) + string + currentText.substring(offset);
+
+                if (newText.matches("\\d*\\.?\\d*")) {
+                    if (string.equals(".") && currentText.contains(".")) {
+                        return;
+                    }
+                    super.insertString(fb, offset, string, attr);
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                if (text == null) {
+                    super.replace(fb, offset, length, text, attrs);
+                    return;
+                }
+                String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
+                String newText = currentText.substring(0, offset) + text + currentText.substring(offset + length);
+
+                if (newText.matches("\\d*\\.?\\d*")) {
+                    if (text.equals(".") && currentText.contains(".") && length == 0) {
+                        return;
+                    }
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+        });
 
         id_empleado_field = createPlaceholderTextField("ID Empleado");
         id_empleado_field.setBounds(128, 400, 450, 50);
+        ((AbstractDocument) id_empleado_field.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                if (string == null) return;
+                if (string.matches("\\d*")) {
+                    super.insertString(fb, offset, string, attr);
+                }
+            }
 
-        // --- BOTÓN GUARDAR ---
-        JButton guardar_gastos = new JButton();
-        guardar_gastos.setBounds(250, 500, 184, 76);
-        guardar_gastos.setOpaque(false);
-        guardar_gastos.setContentAreaFilled(false);
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                if (text == null) {
+                    super.replace(fb, offset, length, text, attrs);
+                    return;
+                }
+                if (text.matches("\\d*")) {
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+        });
+
+        guardar_gastos = new JButton("Guardar Gastos");
+        guardar_gastos.setBounds(250, 500, 200, 50);
+        guardar_gastos.setFont(new Font("Arial", Font.BOLD, 20));
+        guardar_gastos.setBackground(new Color(70, 130, 180));
+        guardar_gastos.setForeground(Color.WHITE);
         guardar_gastos.setFocusPainted(false);
-        guardar_gastos.setBorderPainted(false);
+        guardar_gastos.setVisible(false);
 
-        ImageIcon imagen_boton_guardar = new ImageIcon("../../Imagenes/Guardar_gastos.png");
-        JLabel label_boton_guardar = new JLabel(imagen_boton_guardar);
-        label_boton_guardar.setBounds(0, 0, 184, 76);
-        guardar_gastos.add(label_boton_guardar);
-
-        // --- LÓGICA DE VISIBILIDAD ---
-        updateFieldsVisibility(false, false); // Ocultar todo al inicio
+        updateFieldsVisibility(false, false);
 
         tipo_gasto_combo.addActionListener(e -> {
             int selection = tipo_gasto_combo.getSelectedIndex();
             if (selection == 1) { // Servicio
                 updateFieldsVisibility(true, false);
+                guardar_gastos.setBounds(250, 400, 200, 50);
             } else if (selection == 2) { // Empleado
                 updateFieldsVisibility(false, true);
+                guardar_gastos.setBounds(250, 500, 200, 50);
             } else {
                 updateFieldsVisibility(false, false);
             }
         });
 
-        // --- ACCIÓN DE GUARDAR ---
         guardar_gastos.addActionListener(e -> {
             int selection = tipo_gasto_combo.getSelectedIndex();
             if (selection == 1) { // Guardar Servicio
-                if (servicios_combo.getSelectedIndex() == 0 || monto_periodo_field.getText().equals("Monto del periodo")) {
+                if (servicios_combo.getSelectedIndex() == 0 || monto_periodo_field.getText().equals("Monto del periodo") || monto_periodo_field.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(frame_gastos_fijos, "Por favor, complete todos los campos de servicio.", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    String mensaje = String.format("Gasto de Servicio Registrado:\nTipo: %s\nMonto: %s", servicios_combo.getSelectedItem(), monto_periodo_field.getText());
-                    JOptionPane.showMessageDialog(frame_gastos_fijos, mensaje, "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
-                    resetForm();
+                    try {
+                        double monto = Double.parseDouble(monto_periodo_field.getText());
+                        String mensaje = String.format("Gasto de Servicio Registrado:\nTipo: %s\nMonto: %.2f", servicios_combo.getSelectedItem(), monto);
+                        JOptionPane.showMessageDialog(frame_gastos_fijos, mensaje, "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
+                        resetForm();
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(frame_gastos_fijos, "Monto del periodo debe ser un número válido.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             } else if (selection == 2) { // Guardar Empleado
-                if (empleados_combo.getSelectedIndex() == 0 || sueldo_mensual_field.getText().equals("Sueldo Mensual") || id_empleado_field.getText().equals("ID Empleado")) {
+                if (empleados_combo.getSelectedIndex() == 0 || sueldo_mensual_field.getText().equals("Sueldo Mensual") || sueldo_mensual_field.getText().isEmpty() || id_empleado_field.getText().equals("ID Empleado") || id_empleado_field.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(frame_gastos_fijos, "Por favor, complete todos los campos de empleado.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-                else {
-                    String mensaje = String.format("Gasto de Empleado Registrado:\nTipo: %s\nSueldo: %s\nID: %s", empleados_combo.getSelectedItem(), sueldo_mensual_field.getText(), id_empleado_field.getText());
-                    JOptionPane.showMessageDialog(frame_gastos_fijos, mensaje, "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
-                    resetForm();
+                } else {
+                    try {
+                        double sueldo = Double.parseDouble(sueldo_mensual_field.getText());
+                        int idEmpleado = Integer.parseInt(id_empleado_field.getText());
+                        String mensaje = String.format("Gasto de Empleado Registrado:\nTipo: %s\nSueldo: %.2f\nID: %d", empleados_combo.getSelectedItem(), sueldo, idEmpleado);
+                        JOptionPane.showMessageDialog(frame_gastos_fijos, mensaje, "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
+                        resetForm();
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(frame_gastos_fijos, "Sueldo Mensual y/o ID Empleado deben ser números válidos.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             }
             else {
@@ -111,7 +191,6 @@ public class gastos_fijos {
             }
         });
 
-        // --- AGREGAR COMPONENTES AL PANEL ---
         pantalla.add(tipo_gasto_combo);
         pantalla.add(servicios_combo);
         pantalla.add(monto_periodo_field);
@@ -121,7 +200,6 @@ public class gastos_fijos {
         pantalla.add(guardar_gastos);
         pantalla.add(cuadro_imagen);
 
-        // Botón Atrás
         JButton btnBack = new JButton("Atrás");
         btnBack.setBounds(580, 5, 93, 34);
         btnBack.addActionListener(e -> {
@@ -140,6 +218,7 @@ public class gastos_fijos {
         empleados_combo.setVisible(empleadoVisible);
         sueldo_mensual_field.setVisible(empleadoVisible);
         id_empleado_field.setVisible(empleadoVisible);
+        guardar_gastos.setVisible(servicioVisible || empleadoVisible);
     }
 
     private void resetForm() {
@@ -155,6 +234,7 @@ public class gastos_fijos {
     private void resetPlaceholderTextField(JTextField textField, String placeholder) {
         textField.setForeground(Color.GRAY);
         textField.setText(placeholder);
+        textField.setFont(new Font("Inter", Font.BOLD, 24)); // Asegura que el placeholder esté en la fuente original
     }
 
     private JTextField createPlaceholderTextField(String placeholder) {
@@ -169,6 +249,7 @@ public class gastos_fijos {
                 if (textField.getText().equals(placeholder)) {
                     textField.setText("");
                     textField.setForeground(Color.BLACK);
+                    textField.setFont(textField.getFont().deriveFont(Font.BOLD)); // Texto ingresado en negrita
                 }
             }
 
@@ -177,6 +258,7 @@ public class gastos_fijos {
                 if (textField.getText().isEmpty()) {
                     textField.setForeground(Color.GRAY);
                     textField.setText(placeholder);
+                    textField.setFont(new Font("Inter", Font.BOLD, 24)); // Vuelve a la fuente original para el placeholder
                 }
             }
         });
